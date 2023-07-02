@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">WeatherForecastApp</string>
+    <string name="thermostat_icon_content_description">Thermostat Icon</string>
+    <string name="wind_power_icon_content_description">Wind Power Icon</string>
 </resources>

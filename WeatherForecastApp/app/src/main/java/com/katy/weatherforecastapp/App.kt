@@ -1,8 +1,8 @@
 package com.katy.weatherforecastapp
 
 import android.app.Application
-import com.katy.weatherforecastapp.Network.OpenWeatherApi
-import com.katy.weatherforecastapp.Network.buildApiService
+import com.katy.weatherforecastapp.network.OpenWeatherApi
+import com.katy.weatherforecastapp.network.buildApiService
 
 class App: Application() {
     companion object {

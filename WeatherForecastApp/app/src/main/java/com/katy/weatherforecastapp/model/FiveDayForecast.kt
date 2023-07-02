@@ -1,7 +1,7 @@
-package com.katy.weatherforecastapp.Responses
+package com.katy.weatherforecastapp.model
 import com.squareup.moshi.Json
 
-data class FiveDayForecastResponse(
+data class FiveDayForecast(
     @field:Json(name = "list") val list: List<WeatherData>,
 )
 

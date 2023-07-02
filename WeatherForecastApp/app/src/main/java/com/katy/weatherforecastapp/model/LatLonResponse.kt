@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.Responses
+package com.katy.weatherforecastapp.model
 
 import com.squareup.moshi.Json
 

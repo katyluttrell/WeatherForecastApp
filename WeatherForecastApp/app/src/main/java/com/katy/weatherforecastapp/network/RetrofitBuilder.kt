@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.Network
+package com.katy.weatherforecastapp.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
