@@ -2,6 +2,8 @@ package com.katy.weatherforecastapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.katy.weatherforecastapp.Network.OpenWeatherApi
+import com.katy.weatherforecastapp.Network.OpenWeatherApiService
 import com.katy.weatherforecastapp.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
@@ -14,5 +16,6 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+        App.openWeatherApi.getLatLong()
     }
 }
