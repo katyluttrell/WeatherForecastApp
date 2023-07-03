@@ -10,8 +10,8 @@ interface OpenWeatherApiService {
 
     @GET("data/2.5/forecast")
     fun getFiveDayForecast(
-        @Query("lat") latitude: Double,
-        @Query("lon") longitude: Double,
+        @Query("lat") latitude: String,
+        @Query("lon") longitude: String,
         @Query("appid") apiKey: String,
         @Query("units") units: String): Call<FiveDayForecast>
 

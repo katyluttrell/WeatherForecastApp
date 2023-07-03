@@ -6,13 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapters.DayForecastAdapter
-import com.katy.weatherforecastapp.model.FiveDayForecast
-import retrofit2.Response
+import com.katy.weatherforecastapp.model.WeatherData
 
 class MainFragment : Fragment() {
 
@@ -37,14 +37,22 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpForecastRecycler()
+        setUpView()
     }
 
-    private fun setUpForecastRecycler(){
-        App.openWeatherApi.getFiveDayForecast(0.0,0.0){ response: Response<FiveDayForecast> ->
+    private fun setUpView() {
+        App.openWeatherApi.getLatLong("80303"){latLonResponse ->
+            val locationTitle = view?.findViewById<TextView>(R.id.locationText)
+            locationTitle?.text = latLonResponse.locationName
+            setUpForecastRecycler(latLonResponse.lat, latLonResponse.lon)
+        }
+    }
+
+    private fun setUpForecastRecycler(latitude: String, longitude: String){
+        App.openWeatherApi.getFiveDayForecast(latitude,longitude){ weatherDataList: List<WeatherData> ->
             val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
             forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
-            forecastRecyclerView?.adapter = response.body()?.list?.let { DayForecastAdapter(it) }
+            forecastRecyclerView?.adapter = context?.let { DayForecastAdapter(weatherDataList, it) }
         }
 
     }

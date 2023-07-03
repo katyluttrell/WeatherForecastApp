@@ -2,4 +2,12 @@
     <string name="app_name">WeatherForecastApp</string>
     <string name="thermostat_icon_content_description">Thermostat Icon</string>
     <string name="wind_power_icon_content_description">Wind Power Icon</string>
+    <string name="temp_format">%1$d°F</string>
+    <string name="blue_thermostat_icon">Blue Thermostat Icon</string>
+    <string name="red_thermostat_icon">Red Thermostat Icon</string>
+    <string name="wind_text_format_mph">%1$d mph</string>
+    <string name="chevron">Chevron</string>
+    <string name="weather_image">Weather Image</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
 </resources>
