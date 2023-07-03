@@ -10,4 +10,7 @@
     <string name="weather_image">Weather Image</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="high_low_temp">High: %1$s°F Low: %2$s°F</string>
+    <string name="humidity">%1$s%% humidity</string>
+    <string name="wind_desc">Wind at %1$s mph with gusts up to %2$s mph</string>
 </resources>

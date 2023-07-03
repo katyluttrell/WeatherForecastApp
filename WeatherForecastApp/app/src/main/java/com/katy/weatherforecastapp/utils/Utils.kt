@@ -3,6 +3,7 @@ package com.katy.weatherforecastapp.utils
 import android.content.Context
 import com.katy.weatherforecastapp.R
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 object Utils{
 
@@ -15,6 +16,11 @@ object Utils{
         } else {
             date.dayOfWeek.name.capitalize()
         }
+    }
+
+    fun formatTime(date: LocalDateTime):String{
+        val formatter = DateTimeFormatter.ofPattern("h:mm a")
+        return date.format(formatter)
     }
 
     fun convertToLocalTime(date: LocalDateTime, shift: Int): LocalDateTime{
