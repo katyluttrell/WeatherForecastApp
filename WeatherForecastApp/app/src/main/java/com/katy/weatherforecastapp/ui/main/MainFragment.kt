@@ -49,7 +49,7 @@ class MainFragment : Fragment() {
     }
 
     private fun setUpForecastRecycler(latitude: String, longitude: String){
-        App.openWeatherApi.getFiveDayForecast(latitude,longitude){ weatherDataList: List<WeatherData> ->
+        App.openWeatherApi.getFiveDayForecast(latitude,longitude){ weatherDataList: List<List<WeatherData>> ->
             val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
             forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
             forecastRecyclerView?.adapter = context?.let { DayForecastAdapter(weatherDataList, it) }

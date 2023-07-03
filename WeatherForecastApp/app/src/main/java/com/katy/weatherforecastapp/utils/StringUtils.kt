@@ -7,9 +7,7 @@ import java.time.format.DateTimeFormatter
 
 class StringUtils(private val context:Context) {
 
-     fun formatDate(dtTxt: String): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val date = LocalDateTime.parse(dtTxt, formatter)
+     fun formatDate(date: LocalDateTime): String {
         val today = LocalDateTime.now()
         return if( today.dayOfYear == date.dayOfYear){
             context.getString(R.string.today)

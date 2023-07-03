@@ -1,15 +1,16 @@
 package com.katy.weatherforecastapp.model
 import com.squareup.moshi.Json
+import java.time.LocalDateTime
 
 data class FiveDayForecast(
-    @field:Json(name = "list") val list: List<WeatherData>,
+    @field:Json(name = "list") val list: List<List<WeatherData>>,
 )
 
 data class WeatherData(
     @field:Json(name = "main") val main: Main,
-    @field:Json(name = "weather") val weather: List<Weather>,
+    @field:Json(name = "weather") val weather: Weather,
     @field:Json(name = "wind") val wind: Wind,
-    @field:Json(name = "dt_txt") val dtTxt: String
+    @field:Json(name = "dt_txt") val dtTxt: LocalDateTime
 )
 
 data class Main(
@@ -34,5 +35,3 @@ data class Wind(
     @field:Json(name = "deg") val deg: Int,
     @field:Json(name = "gust") val gust: Double
 )
-
-

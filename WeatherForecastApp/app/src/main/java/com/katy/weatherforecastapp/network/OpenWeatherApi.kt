@@ -13,7 +13,7 @@ import retrofit2.Response
 
 class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
 
-    fun getFiveDayForecast(latitude:String, longitude:String, callback: (List<WeatherData>) -> Unit){
+    fun getFiveDayForecast(latitude:String, longitude:String, callback: (List<List<WeatherData>>) -> Unit){
         apiService.getFiveDayForecast(latitude,longitude, BuildConfig.WEATHER_API_KEY, "imperial")
             .enqueue(object: Callback<FiveDayForecast>{
                 override fun onResponse(
