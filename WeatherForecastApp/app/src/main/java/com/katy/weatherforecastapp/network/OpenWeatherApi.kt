@@ -30,18 +30,19 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
             })
     }
 
-    fun getLatLong(zipCode:String, callback: (LatLonResponse) -> Unit){
+    fun getLatLong(zipCode:String, successCallback: (LatLonResponse) -> Unit, failureCallback: () -> Unit){
         apiService.getLatLon(zipCode, BuildConfig.WEATHER_API_KEY)
             .enqueue(object :Callback<LatLonResponse>{
                 override fun onResponse(
                     call: Call<LatLonResponse>,
                     response: Response<LatLonResponse>
                 ) {
-                    response.body()?.let { callback(it) }
+                    response.body()?.let { successCallback(it) }
                 }
 
                 override fun onFailure(call: Call<LatLonResponse>, t: Throwable) {
                     Log.d("DEBUG", t.toString())
+                    failureCallback()
                 }
 
             })

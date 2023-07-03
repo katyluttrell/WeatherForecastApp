@@ -14,7 +14,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapters.DayForecastAdapter
+import com.katy.weatherforecastapp.model.LatLonResponse
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 
 class MainFragment : Fragment() {
 
@@ -39,22 +41,22 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        promptForZipCode()
-        setUpView("80303")
+        if (!viewModel.latLonResponse.isInitialized){
+            promptForZipCode()
+        }
+        viewModel.latLonResponse.observe(viewLifecycleOwner){
+            setUpView(it)
+        }
     }
 
     private fun promptForZipCode() {
-//        AlertDialog.Builder(context)
-//            .setTitle("Enter your zip code")
-//            .set
+        activity?.supportFragmentManager?.let { ZipCodeDialogFragment(viewModel).show(it, "") }
     }
 
-    private fun setUpView(zipCode: String) {
-        App.openWeatherApi.getLatLong(zipCode){latLonResponse ->
-            val locationTitle = view?.findViewById<TextView>(R.id.locationText)
-            locationTitle?.text = latLonResponse.locationName
-            setUpForecastRecycler(latLonResponse.lat, latLonResponse.lon)
-        }
+    private fun setUpView(latLonResponse: LatLonResponse) {
+        val locationTitle = view?.findViewById<TextView>(R.id.locationText)
+        locationTitle?.text = latLonResponse.locationName
+        setUpForecastRecycler(latLonResponse.lat, latLonResponse.lon)
     }
 
     private fun setUpForecastRecycler(latitude: String, longitude: String){
