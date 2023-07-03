@@ -12,7 +12,7 @@ import coil.load
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
-import com.katy.weatherforecastapp.utils.StringUtils
+import com.katy.weatherforecastapp.utils.Utils
 
 class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private val context:Context): RecyclerView.Adapter<DayForecastAdapter.ViewHolder>(){
 
@@ -27,14 +27,23 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = dataList[position][0]
+        val day = dataList[position]
+        val data = getMiddleOrFirstTime(day)
         setWeatherImage(holder.weatherImage, data.weather.icon)
-        holder.dateText.text = StringUtils(context).formatDate(data.dtTxt)
+        holder.dateText.text = Utils.formatDate(data.dtTxt, context)
         holder.weatherText.text = data.weather.main
         holder.tempText.text =  context.getString(R.string.temp_format,data.main.temp.toInt())
         setTempIconColor(holder.tempIcon, data.main.temp)
         holder.windText.text = context.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
         holder.itemView.setOnClickListener { onClick(holder, dataList[position]) }
+    }
+
+    private fun getMiddleOrFirstTime(day: List<WeatherData>): WeatherData {
+        return if(day.size == 8){
+            day[4]
+        }else {
+            day[0]
+        }
     }
 
 

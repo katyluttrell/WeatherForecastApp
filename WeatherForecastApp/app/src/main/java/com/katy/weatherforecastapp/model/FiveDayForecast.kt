@@ -3,14 +3,15 @@ import com.squareup.moshi.Json
 import java.time.LocalDateTime
 
 data class FiveDayForecast(
-    @field:Json(name = "list") val list: List<List<WeatherData>>,
+    @field:Json(name = "list") val list: List<WeatherData>,
+    @field:Json(name = "city") val city: City
 )
 
 data class WeatherData(
     @field:Json(name = "main") val main: Main,
     @field:Json(name = "weather") val weather: Weather,
     @field:Json(name = "wind") val wind: Wind,
-    @field:Json(name = "dt_txt") val dtTxt: LocalDateTime
+    @field:Json(name = "dt_txt") var dtTxt: LocalDateTime
 )
 
 data class Main(
@@ -34,4 +35,7 @@ data class Wind(
     @field:Json(name = "speed") val speed: Double,
     @field:Json(name = "deg") val deg: Int,
     @field:Json(name = "gust") val gust: Double
+)
+data class City(
+    @field:Json(name = "timezone") val timezone: Int,
 )

@@ -4,9 +4,13 @@ import android.app.AlertDialog
 import android.content.Context
 import android.util.Log
 import com.katy.weatherforecastapp.BuildConfig
+import com.katy.weatherforecastapp.adapters.DateAdapter
+import com.katy.weatherforecastapp.adapters.WeatherAdapter
 import com.katy.weatherforecastapp.model.FiveDayForecast
 import com.katy.weatherforecastapp.model.LatLonResponse
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.utils.Utils
+import com.squareup.moshi.Moshi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +25,7 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
                     response: Response<FiveDayForecast>
                 ) {
                    Log.d("DEBUG", response.toString())
-                    response.body()?.list?.let { callback(it) }
+                    response.body()?.let { callback(organizeByDay(it))}
                 }
 
                 override fun onFailure(call: Call<FiveDayForecast>, t: Throwable) {
@@ -46,5 +50,31 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
                 }
 
             })
+    }
+
+    private fun resolveTimeZone(fiveDayForecast: FiveDayForecast): List<WeatherData>{
+        val offset = fiveDayForecast.city.timezone
+        val list = fiveDayForecast.list
+        list.forEach{ it.dtTxt = Utils.convertToLocalTime(it.dtTxt, offset) }
+        return list
+    }
+
+    private fun organizeByDay(fiveDayForecast: FiveDayForecast): List<List<WeatherData>>{
+        val resolvedList = resolveTimeZone(fiveDayForecast)
+        val listOfDays = mutableListOf<List<WeatherData>>()
+        var oneDayForecastList = mutableListOf<WeatherData>()
+        var currentDay: Int? = null
+        for (weatherData in resolvedList) {
+            val dataDay = weatherData.dtTxt.dayOfYear
+            if(dataDay != currentDay){
+                if(oneDayForecastList.isNotEmpty()){
+                    listOfDays.add(oneDayForecastList)
+                    oneDayForecastList = mutableListOf<WeatherData>()
+                }
+                currentDay = dataDay
+            }
+            oneDayForecastList.add(weatherData)
+        }
+        return listOfDays
     }
 }
