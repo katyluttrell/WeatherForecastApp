@@ -1,16 +1,11 @@
 package com.katy.weatherforecastapp.network
 
-import android.app.AlertDialog
-import android.content.Context
 import android.util.Log
 import com.katy.weatherforecastapp.BuildConfig
-import com.katy.weatherforecastapp.adapters.DateAdapter
-import com.katy.weatherforecastapp.adapters.WeatherAdapter
 import com.katy.weatherforecastapp.model.FiveDayForecast
 import com.katy.weatherforecastapp.model.LatLonResponse
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.utils.Utils
-import com.squareup.moshi.Moshi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
