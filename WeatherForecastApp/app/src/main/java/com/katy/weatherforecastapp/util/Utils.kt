@@ -43,7 +43,12 @@ object Utils{
             }
             oneDayForecastList.add(weatherData)
         }
+        listOfDays.add(oneDayForecastList)
         return listOfDays
+    }
+
+    fun sortWeatherDataByTimeStamp(weatherList:List<WeatherData>) : List<WeatherData>{
+        return weatherList.sortedBy { it.dtTxt }
     }
 }
 

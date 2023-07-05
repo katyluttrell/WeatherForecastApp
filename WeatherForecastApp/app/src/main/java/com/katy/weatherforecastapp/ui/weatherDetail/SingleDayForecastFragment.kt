@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.TimeForecastAdapter
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.network.LinkFactory
 
 class SingleDayForecastFragment : Fragment() {
 
@@ -61,11 +64,21 @@ class SingleDayForecastFragment : Fragment() {
     }
 
     private fun populateCurrentWeatherData(weatherNow: WeatherData) {
+        view?.findViewById<ImageView>(R.id.nowWeatherImage)?.let { loadImage(weatherNow.weather.icon, it) }
         view?.findViewById<TextView>(R.id.nowWeatherName)?.text = weatherNow.weather.main
         view?.findViewById<TextView>(R.id.nowWeatherDescription)?.text = weatherNow.weather.description
         view?.findViewById<TextView>(R.id.humidity)?.text = context?.getString(R.string.humidity, weatherNow.main.humidity)
         view?.findViewById<TextView>(R.id.tempHighLow)?.text = context?.getString(R.string.high_low_temp, weatherNow.main.tempMax.toInt().toString(), weatherNow.main.tempMin.toInt().toString())
         view?.findViewById<TextView>(R.id.wind)?.text = context?.getString(R.string.wind_desc, weatherNow.wind.speed.toInt().toString(), weatherNow.wind.gust.toInt().toString())
+    }
+
+    private fun loadImage(icon:String, weatherImage: ImageView){
+        val url = LinkFactory().openWeatherIconLink(icon)
+        weatherImage.load(url) {
+            size(350, 350)
+            placeholder(R.drawable.baseline_sync)
+            error(R.drawable.baseline_sync_problem_24)
+        }
     }
 
 }

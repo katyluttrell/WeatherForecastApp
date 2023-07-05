@@ -1,10 +1,6 @@
 package com.katy.weatherforecastapp.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.katy.weatherforecastapp.model.Location
+import androidx.room.*
 import com.katy.weatherforecastapp.model.WeatherData
 
 @Dao
@@ -14,4 +10,8 @@ interface WeatherDataDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addWeatherData(weatherData: WeatherData)
+
+    @Transaction
+    @Query("DELETE FROM weatherData")
+    fun deleteAll()
 }

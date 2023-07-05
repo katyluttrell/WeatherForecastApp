@@ -14,4 +14,6 @@ class MainViewModel : ViewModel() {
     val weatherDataList: MutableLiveData<List<List<WeatherData>>> by lazy {
         MutableLiveData<List<List<WeatherData>>>()
     }
+
+    var noInternetAlertShown = false
 }

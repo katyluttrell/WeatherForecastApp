@@ -12,7 +12,11 @@ class WeatherRepositoryImpl (private val locationDao: LocationDao, private val w
     }
 
     override suspend fun getFiveDayForecastList(): List<List<WeatherData>>? {
-        return weatherDataDao.getWeatherData()?.let { Utils.organizeWeatherDataByDay(it) }
+        return weatherDataDao.getWeatherData()?.let { Utils.organizeWeatherDataByDay(Utils.sortWeatherDataByTimeStamp(it)) }
+    }
+
+    override suspend fun deleteAllWeatherData() {
+        weatherDataDao.deleteAll()
     }
 
     override suspend fun addLocation(location: Location) = locationDao.addLocation(location)

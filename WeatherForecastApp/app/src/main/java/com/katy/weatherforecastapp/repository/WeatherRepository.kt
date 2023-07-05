@@ -6,6 +6,7 @@ import com.katy.weatherforecastapp.model.WeatherData
 interface WeatherRepository {
     suspend fun addFiveDayForecastList(forecast: List<List<WeatherData>>)
     suspend fun getFiveDayForecastList(): List<List<WeatherData>>?
+    suspend fun deleteAllWeatherData()
     suspend fun addLocation(location: Location)
     suspend fun getLocation(): Location?
 }

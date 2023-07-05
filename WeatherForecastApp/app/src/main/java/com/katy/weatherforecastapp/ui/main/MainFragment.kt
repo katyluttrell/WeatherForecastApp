@@ -1,10 +1,8 @@
 package com.katy.weatherforecastapp.ui.main
 
 import android.app.AlertDialog
-import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
@@ -23,8 +20,6 @@ import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.properties.Delegates
 
 class MainFragment : Fragment() {
 
@@ -33,7 +28,7 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
-    private var hasInternet = false
+    private var hasInternet: Boolean? = null
     private val repository by lazy { App.repository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,76 +46,88 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(!hasInternet){
+        if(hasInternet != true){
             checkForCachedLocation()
         } else if (!viewModel.location.isInitialized){
             promptForZipCode()
         }
         setUpObservers()
     }
-
     private fun showNoInternetOldDataDialog() {
-        AlertDialog.Builder(activity)
-            .setTitle("No Internet")
-            .setMessage("Data shown is from last time app was used with internet access.")
-            .setNeutralButton("OK"){ dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
+        if(!viewModel.noInternetAlertShown){
+            AlertDialog.Builder(activity)
+                .setTitle("No Internet")
+                .setMessage("Data shown is from last time app was used with internet access.")
+                .setNeutralButton("OK"){ dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+            viewModel.noInternetAlertShown = true
+        }
     }
 
     private fun showNoInternetNoDataDialog() {
-       AlertDialog.Builder(activity)
-           .setTitle("No Internet Access or Saved Data")
-           .setMessage("Please try again later.")
-           .setNeutralButton("OK"){ dialog, _ ->
-               dialog.dismiss()
-           }
-           .create()
-           .show()
+        if(!viewModel.noInternetAlertShown) {
+            AlertDialog.Builder(activity)
+                .setTitle("No Internet Access or Saved Data")
+                .setMessage("Please try again later.")
+                .setNeutralButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+            viewModel.noInternetAlertShown = true
+        }
     }
 
     private fun setUpObservers() {
         viewModel.location.observe(viewLifecycleOwner){
-            addLocationToDatabase(it)
             setUpView(it)
-            if(hasInternet) {
+            if(hasInternet == true) {
+                addLocationToDatabase(it)
                 fetchFiveDayForecast(it)
             }else{
                 checkForCachedWeatherData()
             }
         }
         viewModel.weatherDataList.observe(viewLifecycleOwner){
-            addWeatherDataToDatabase(it)
+            if(hasInternet == true) {
+                addWeatherDataToDatabase(it)
+            }
             setUpForecastRecycler(it)
         }
     }
 
     private fun checkForCachedWeatherData() {
         GlobalScope.launch(Dispatchers.IO) {
-            repository.getFiveDayForecastList()?.let{
-                viewModel.weatherDataList.postValue(it)
+            val list = repository.getFiveDayForecastList()
+                if(!list.isNullOrEmpty()){
+                viewModel.weatherDataList.postValue(list)
                 GlobalScope.launch(Dispatchers.Main) {
                     showNoInternetOldDataDialog()
                 }
-            }?:  GlobalScope.launch(Dispatchers.Main) {showNoWeatherDataDialog()}
+            }else{ GlobalScope.launch(Dispatchers.Main) {showNoWeatherDataDialog()}}
         }
     }
 
     private fun showNoWeatherDataDialog() {
-        AlertDialog.Builder(activity)
-            .setTitle("No Weather Data for This Location")
-            .setMessage("Please try again later with internet access.")
-            .setNeutralButton("OK"){ dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
+        if(!viewModel.noInternetAlertShown) {
+            AlertDialog.Builder(activity)
+                .setTitle("No Weather Data for This Location")
+                .setMessage("Please try again later with internet access.")
+                .setNeutralButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+            viewModel.noInternetAlertShown = true
+        }
     }
 
     private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
         GlobalScope.launch(Dispatchers.IO) {
+            repository.deleteAllWeatherData()
             repository.addFiveDayForecastList(data)
         }
     }
