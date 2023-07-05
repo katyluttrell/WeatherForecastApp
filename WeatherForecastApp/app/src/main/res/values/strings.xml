@@ -13,4 +13,12 @@
     <string name="high_low_temp">High: %1$s°F Low: %2$s°F</string>
     <string name="humidity">%1$s%% humidity</string>
     <string name="wind_desc">Wind at %1$s mph with gusts up to %2$s mph</string>
+    <string name="edit">Edit</string>
+    <string name="ok">OK</string>
+    <string name="no_internet">No Internet</string>
+    <string name="no_internet_location_change_message">Location can be changed with internet access.</string>
+    <string name="no_weather_data">No Weather Data for This Location</string>
+    <string name="try_again_with_internet">Please try again later with internet access.</string>
+    <string name="no_internet_no_data">No Internet Access or Saved Data</string>
+    <string name="old_data_message">Data shown is from last time app was used with internet access.</string>
 </resources>

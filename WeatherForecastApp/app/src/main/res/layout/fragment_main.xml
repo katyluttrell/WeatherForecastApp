@@ -18,6 +18,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/editButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:contentDescription="@string/edit"
+        android:src="@drawable/baseline_edit_location_alt_24"
+        app:layout_constraintBottom_toBottomOf="@id/locationText"
+        app:layout_constraintStart_toEndOf="@id/locationText"
+        app:layout_constraintTop_toTopOf="@id/locationText" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/forecastRecyclerView"
         android:layout_width="match_parent"

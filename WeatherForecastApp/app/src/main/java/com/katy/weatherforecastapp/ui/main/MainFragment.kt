@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
@@ -56,9 +57,9 @@ class MainFragment : Fragment() {
     private fun showNoInternetOldDataDialog() {
         if(!viewModel.noInternetAlertShown){
             AlertDialog.Builder(activity)
-                .setTitle("No Internet")
-                .setMessage("Data shown is from last time app was used with internet access.")
-                .setNeutralButton("OK"){ dialog, _ ->
+                .setTitle(R.string.no_internet)
+                .setMessage(getString(R.string.old_data_message))
+                .setNeutralButton(R.string.ok){ dialog, _ ->
                     dialog.dismiss()
                 }
                 .create()
@@ -70,9 +71,9 @@ class MainFragment : Fragment() {
     private fun showNoInternetNoDataDialog() {
         if(!viewModel.noInternetAlertShown) {
             AlertDialog.Builder(activity)
-                .setTitle("No Internet Access or Saved Data")
-                .setMessage("Please try again later.")
-                .setNeutralButton("OK") { dialog, _ ->
+                .setTitle(getString(R.string.no_internet_no_data))
+                .setMessage(R.string.try_again_with_internet)
+                .setNeutralButton(R.string.ok) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .create()
@@ -102,7 +103,7 @@ class MainFragment : Fragment() {
     private fun checkForCachedWeatherData() {
         GlobalScope.launch(Dispatchers.IO) {
             val list = repository.getFiveDayForecastList()
-                if(!list.isNullOrEmpty()){
+            if(!list.isNullOrEmpty()){
                 viewModel.weatherDataList.postValue(list)
                 GlobalScope.launch(Dispatchers.Main) {
                     showNoInternetOldDataDialog()
@@ -114,15 +115,26 @@ class MainFragment : Fragment() {
     private fun showNoWeatherDataDialog() {
         if(!viewModel.noInternetAlertShown) {
             AlertDialog.Builder(activity)
-                .setTitle("No Weather Data for This Location")
-                .setMessage("Please try again later with internet access.")
-                .setNeutralButton("OK") { dialog, _ ->
+                .setTitle(getString(R.string.no_weather_data))
+                .setMessage(getString(R.string.try_again_with_internet))
+                .setNeutralButton(R.string.ok) { dialog, _ ->
                     dialog.dismiss()
                 }
                 .create()
                 .show()
             viewModel.noInternetAlertShown = true
         }
+    }
+
+    private fun showNoLocationChangeDialog() {
+        AlertDialog.Builder(activity)
+            .setTitle(getString(R.string.no_internet))
+            .setMessage(getString(R.string.no_internet_location_change_message))
+            .setNeutralButton(getString(R.string.ok)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
@@ -159,6 +171,17 @@ class MainFragment : Fragment() {
     private fun setUpView(location: Location) {
         val locationTitle = view?.findViewById<TextView>(R.id.locationText)
         locationTitle?.text = location.locationName
+        val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
+        editLocationButton?.visibility = View.VISIBLE
+        editLocationButton?.setOnClickListener {
+            hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
+            if(hasInternet==true){
+                promptForZipCode()
+            }
+            else{
+                showNoLocationChangeDialog()
+            }
+        }
     }
     private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>){
         val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
