@@ -20,7 +20,8 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
                     response: Response<FiveDayForecast>
                 ) {
                    Log.d("DEBUG", response.toString())
-                    response.body()?.let { callback(organizeByDay(it))}
+                    response.body()?.let {
+                        callback(Utils.organizeWeatherDataByDay(resolveTimeZone(it)))}
                 }
 
                 override fun onFailure(call: Call<FiveDayForecast>, t: Throwable) {
@@ -55,22 +56,4 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
         return list
     }
 
-    private fun organizeByDay(fiveDayForecast: FiveDayForecast): List<List<WeatherData>>{
-        val resolvedList = resolveTimeZone(fiveDayForecast)
-        val listOfDays = mutableListOf<List<WeatherData>>()
-        var oneDayForecastList = mutableListOf<WeatherData>()
-        var currentDay: Int? = null
-        for (weatherData in resolvedList) {
-            val dataDay = weatherData.dtTxt.dayOfYear
-            if(dataDay != currentDay){
-                if(oneDayForecastList.isNotEmpty()){
-                    listOfDays.add(oneDayForecastList)
-                    oneDayForecastList = mutableListOf<WeatherData>()
-                }
-                currentDay = dataDay
-            }
-            oneDayForecastList.add(weatherData)
-        }
-        return listOfDays
-    }
 }

@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.properties.Delegates
 
 class MainFragment : Fragment() {
 
@@ -30,10 +31,12 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+    private var hasInternet = false
     private val repository by lazy { App.repository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
@@ -46,7 +49,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(!NetworkCapabilities().hasInternetAccess(requireContext())){
+        if(!hasInternet){
             checkForCachedLocation()
         } else if (!viewModel.location.isInitialized){
             promptForZipCode()
@@ -55,13 +58,46 @@ class MainFragment : Fragment() {
     }
 
     private fun showNoInternetNoDataDialog() {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     private fun setUpObservers() {
         viewModel.location.observe(viewLifecycleOwner){
             addLocationToDatabase(it)
             setUpView(it)
+            if(hasInternet) {
+                fetchFiveDayForecast(it)
+            }else{
+                checkForCachedWeatherData()
+            }
+        }
+        viewModel.weatherDataList.observe(viewLifecycleOwner){
+            addWeatherDataToDatabase(it)
+            setUpForecastRecycler(it)
+        }
+    }
+
+    private fun checkForCachedWeatherData() {
+        GlobalScope.launch(Dispatchers.IO) {
+            repository.getFiveDayForecastList()?.let{
+                viewModel.weatherDataList.postValue(it)
+            }?: showNoWeatherDataDialog()
+        }
+    }
+
+    private fun showNoWeatherDataDialog() {
+        TODO("Not yet implemented")
+    }
+
+    private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
+        GlobalScope.launch(Dispatchers.IO) {
+            repository.addFiveDayForecastList(data)
+        }
+    }
+
+    private fun fetchFiveDayForecast(location: Location) {
+        App.openWeatherApi.getFiveDayForecast(location.lat, location.lon){
+            viewModel.weatherDataList.postValue(it)
         }
     }
 
@@ -75,7 +111,6 @@ class MainFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             repository.getLocation()?.let{
                 viewModel.location.postValue(it)
-                Log.d("DEBUG", "Cached Location:" + it.locationName)
             }?: showNoInternetNoDataDialog()
         }
     }
@@ -87,18 +122,11 @@ class MainFragment : Fragment() {
     private fun setUpView(location: Location) {
         val locationTitle = view?.findViewById<TextView>(R.id.locationText)
         locationTitle?.text = location.locationName
-        setUpForecastRecycler(location.lat, location.lon)
     }
-
-    private fun setUpForecastRecycler(latitude: String, longitude: String){
-        App.openWeatherApi.getFiveDayForecast(latitude,longitude){ weatherDataList: List<List<WeatherData>> ->
-            val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
-            forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
-            forecastRecyclerView?.adapter = activity?.let { DayForecastAdapter(weatherDataList, it) }
-        }
-
+    private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>){
+        val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
+        forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
+        forecastRecyclerView?.adapter = activity?.let { DayForecastAdapter(weatherDataList, it) }
     }
-
-
 
 }

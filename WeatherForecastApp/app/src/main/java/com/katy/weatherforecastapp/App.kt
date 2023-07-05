@@ -16,7 +16,7 @@ class App: Application() {
             WeatherDatabase.buildDatabase(instance)
         }
         val repository:WeatherRepository by lazy {
-            WeatherRepositoryImpl(database.locationDao())
+            WeatherRepositoryImpl(database.locationDao(), database.weatherDataDao())
         }
     }
 

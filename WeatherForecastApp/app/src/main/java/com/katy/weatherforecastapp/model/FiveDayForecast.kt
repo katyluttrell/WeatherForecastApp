@@ -1,21 +1,31 @@
 package com.katy.weatherforecastapp.model
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.*
 import com.google.android.material.shape.ShapePath.PathArcOperation
+import com.katy.weatherforecastapp.adapter.DateAdapter
 import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
+import java.util.UUID
 
 data class FiveDayForecast(
     @field:Json(name = "list") val list: List<WeatherData>,
-    @field:Json(name = "city") val city: City
+    @field:Json(name = "city") val city: City,
 )
 
+@Entity(tableName = "weatherData")
 @Parcelize
 data class WeatherData(
+    @Embedded
     @field:Json(name = "main") val main: Main,
+    @Embedded
     @field:Json(name = "weather") val weather: Weather,
+    @Embedded
     @field:Json(name = "wind") val wind: Wind,
+    @PrimaryKey
+    @TypeConverters(DateAdapter::class)
     @field:Json(name = "dt_txt") var dtTxt: LocalDateTime
 ):Parcelable
 
@@ -40,5 +50,5 @@ data class Wind(
     @field:Json(name = "gust") val gust: Double
 ): Parcelable
 data class City(
-    @field:Json(name = "timezone") val timezone: Int,
+    @field:Json(name = "timezone") val timezone: Int
 )
