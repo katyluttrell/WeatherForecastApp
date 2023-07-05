@@ -6,13 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.katy.weatherforecastapp.R
-import com.katy.weatherforecastapp.adapters.TimeForecastAdapter
-import com.katy.weatherforecastapp.model.Weather
+import com.katy.weatherforecastapp.adapter.TimeForecastAdapter
 import com.katy.weatherforecastapp.model.WeatherData
 
 class SingleDayForecastFragment : Fragment() {

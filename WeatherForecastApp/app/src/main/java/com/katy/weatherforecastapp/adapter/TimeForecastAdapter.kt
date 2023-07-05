@@ -1,24 +1,20 @@
-package com.katy.weatherforecastapp.adapters
+package com.katy.weatherforecastapp.adapter
 
 import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
-import com.katy.weatherforecastapp.ui.weatherDetail.SingleDayForecastFragment
-import com.katy.weatherforecastapp.utils.Utils
+import com.katy.weatherforecastapp.util.Utils
 
-class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity): RecyclerView.Adapter<DayForecastAdapter.ViewHolder>(){
+class TimeForecastAdapter(private val dataList: List<WeatherData>, private val activity: Activity): RecyclerView.Adapter<TimeForecastAdapter.ViewHolder>(){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(parent.context)
@@ -31,25 +27,15 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val day = dataList[position]
-        val data = getMiddleOrFirstTime(day)
+        val data = dataList[position]
         setWeatherImage(holder.weatherImage, data.weather.icon)
-        holder.dateText.text = Utils.formatDate(data.dtTxt, activity)
+        holder.chevron.visibility = View.GONE
+        holder.dateText.text = Utils.formatTime(data.dtTxt)
         holder.weatherText.text = data.weather.main
         holder.tempText.text =  activity.getString(R.string.temp_format,data.main.temp.toInt())
         setTempIconColor(holder.tempIcon, data.main.temp)
         holder.windText.text = activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
-        holder.itemView.setOnClickListener { onClick(dataList[position]) }
     }
-
-    private fun getMiddleOrFirstTime(day: List<WeatherData>): WeatherData {
-        return if(day.size == 8){
-            day[4]
-        }else {
-            day[0]
-        }
-    }
-
 
     private fun setWeatherImage(weatherImage: ImageView, icon: String) {
         val url = LinkFactory().openWeatherIconLink(icon)
@@ -68,7 +54,7 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
             }
             temp >= 85.0 -> {
                 tempIcon.contentDescription = activity.getString(R.string.red_thermostat_icon)
-                val color = ContextCompat.getColor(activity,R.color.md_theme_light_error)
+                val color = ContextCompat.getColor(activity, R.color.md_theme_light_error)
                 tempIcon.setColorFilter(color)
             }
             else -> {
@@ -79,6 +65,7 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
     }
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
+        val chevron: ImageView = ItemView.findViewById(R.id.chevron)
         val weatherImage: ImageView = ItemView.findViewById(R.id.weatherImage)
         val dateText: TextView = ItemView.findViewById(R.id.dateText)
         val weatherText: TextView = ItemView.findViewById(R.id.weatherText)
@@ -86,15 +73,4 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
         val tempText: TextView = ItemView.findViewById(R.id.tempText)
         val windText: TextView = ItemView.findViewById(R.id.windText)
     }
-
-    fun onClick(dayData: List<WeatherData>){
-        val fragmentManager = activity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.container, SingleDayForecastFragment.newInstance(dayData))
-        fragmentTransaction.addToBackStack("SingleDayForecastFragment")
-        fragmentTransaction.commit()
-    }
-
-
 }
-

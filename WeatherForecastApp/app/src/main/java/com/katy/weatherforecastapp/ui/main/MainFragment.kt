@@ -1,8 +1,9 @@
 package com.katy.weatherforecastapp.ui.main
 
-import android.app.AlertDialog
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -10,13 +11,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
-import com.katy.weatherforecastapp.adapters.DayForecastAdapter
-import com.katy.weatherforecastapp.model.LatLonResponse
+import com.katy.weatherforecastapp.adapter.DayForecastAdapter
+import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.network.NetworkCapabilities
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainFragment : Fragment() {
 
@@ -25,11 +30,11 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
+    private val repository by lazy { App.repository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onCreateView(
@@ -41,11 +46,37 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (!viewModel.latLonResponse.isInitialized){
+        if(!NetworkCapabilities().hasInternetAccess(requireContext())){
+            checkForCachedLocation()
+        } else if (!viewModel.location.isInitialized){
             promptForZipCode()
         }
-        viewModel.latLonResponse.observe(viewLifecycleOwner){
+        setUpObservers()
+    }
+
+    private fun showNoInternetNoDataDialog() {
+        TODO("Not yet implemented")
+    }
+
+    private fun setUpObservers() {
+        viewModel.location.observe(viewLifecycleOwner){
+            addLocationToDatabase(it)
             setUpView(it)
+        }
+    }
+
+    private fun addLocationToDatabase(location:Location) {
+        GlobalScope.launch(Dispatchers.IO) {
+            repository.addLocation(location)
+        }
+    }
+
+    private fun checkForCachedLocation() {
+        GlobalScope.launch(Dispatchers.IO) {
+            repository.getLocation()?.let{
+                viewModel.location.postValue(it)
+                Log.d("DEBUG", "Cached Location:" + it.locationName)
+            }?: showNoInternetNoDataDialog()
         }
     }
 
@@ -53,10 +84,10 @@ class MainFragment : Fragment() {
         activity?.supportFragmentManager?.let { ZipCodeDialogFragment(viewModel).show(it, "") }
     }
 
-    private fun setUpView(latLonResponse: LatLonResponse) {
+    private fun setUpView(location: Location) {
         val locationTitle = view?.findViewById<TextView>(R.id.locationText)
-        locationTitle?.text = latLonResponse.locationName
-        setUpForecastRecycler(latLonResponse.lat, latLonResponse.lon)
+        locationTitle?.text = location.locationName
+        setUpForecastRecycler(location.lat, location.lon)
     }
 
     private fun setUpForecastRecycler(latitude: String, longitude: String){

@@ -4,9 +4,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.TextView
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
@@ -29,11 +26,10 @@ class ZipCodeDialogFragment(private val viewModel: MainViewModel) : DialogFragme
         button?.setOnClickListener {
             val editText = dialogView.findViewById<TextInputLayout>(R.id.zipCodeTextField)
             editText?.let{
-                editText.isErrorEnabled = false
                 val entry = it.editText?.text.toString()
                 if(isValidZipCode(entry)){
                     App.openWeatherApi.getLatLong(entry, { response ->
-                        viewModel.latLonResponse.postValue(response)
+                        viewModel.location.postValue(response)
                         dialog.dismiss()
                     }, {
                         displayValidationError(editText)
@@ -46,7 +42,6 @@ class ZipCodeDialogFragment(private val viewModel: MainViewModel) : DialogFragme
     }
 
     private fun displayValidationError(editText: TextInputLayout){
-        editText.isErrorEnabled = true
         editText.error = "Invalid Zip Code"
     }
 

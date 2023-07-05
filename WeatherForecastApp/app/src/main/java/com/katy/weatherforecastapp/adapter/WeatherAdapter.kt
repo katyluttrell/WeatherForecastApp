@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.adapters
+package com.katy.weatherforecastapp.adapter
 
 import com.katy.weatherforecastapp.model.Weather
 import com.squareup.moshi.JsonAdapter

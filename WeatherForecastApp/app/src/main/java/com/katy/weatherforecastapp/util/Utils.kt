@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.utils
+package com.katy.weatherforecastapp.util
 
 import android.content.Context
 import com.katy.weatherforecastapp.R

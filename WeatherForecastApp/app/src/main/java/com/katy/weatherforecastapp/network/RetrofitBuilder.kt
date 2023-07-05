@@ -1,7 +1,7 @@
 package com.katy.weatherforecastapp.network
 
-import com.katy.weatherforecastapp.adapters.DateAdapter
-import com.katy.weatherforecastapp.adapters.WeatherAdapter
+import com.katy.weatherforecastapp.adapter.DateAdapter
+import com.katy.weatherforecastapp.adapter.WeatherAdapter
 import com.squareup.moshi.Moshi
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

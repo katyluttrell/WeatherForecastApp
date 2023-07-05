@@ -1,7 +1,7 @@
 package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.model.FiveDayForecast
-import com.katy.weatherforecastapp.model.LatLonResponse
+import com.katy.weatherforecastapp.model.Location
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,5 +18,5 @@ interface OpenWeatherApiService {
     @GET("/geo/1.0/zip")
     fun getLatLon(
         @Query("zip") zipCode: String,
-        @Query("appid") apiKey: String): Call<LatLonResponse>
+        @Query("appid") apiKey: String): Call<Location>
 }

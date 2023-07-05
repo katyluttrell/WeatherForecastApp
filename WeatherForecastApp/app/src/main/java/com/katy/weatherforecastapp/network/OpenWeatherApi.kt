@@ -3,9 +3,9 @@ package com.katy.weatherforecastapp.network
 import android.util.Log
 import com.katy.weatherforecastapp.BuildConfig
 import com.katy.weatherforecastapp.model.FiveDayForecast
-import com.katy.weatherforecastapp.model.LatLonResponse
+import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.utils.Utils
+import com.katy.weatherforecastapp.util.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,17 +30,17 @@ class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
             })
     }
 
-    fun getLatLong(zipCode:String, successCallback: (LatLonResponse) -> Unit, failureCallback: () -> Unit){
+    fun getLatLong(zipCode:String, successCallback: (Location) -> Unit, failureCallback: () -> Unit){
         apiService.getLatLon(zipCode, BuildConfig.WEATHER_API_KEY)
-            .enqueue(object :Callback<LatLonResponse>{
+            .enqueue(object :Callback<Location>{
                 override fun onResponse(
-                    call: Call<LatLonResponse>,
-                    response: Response<LatLonResponse>
+                    call: Call<Location>,
+                    response: Response<Location>
                 ) {
                     response.body()?.let { successCallback(it) }
                 }
 
-                override fun onFailure(call: Call<LatLonResponse>, t: Throwable) {
+                override fun onFailure(call: Call<Location>, t: Throwable) {
                     Log.d("DEBUG", t.toString())
                     failureCallback()
                 }
