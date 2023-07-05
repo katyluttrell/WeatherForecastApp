@@ -1,5 +1,6 @@
 package com.katy.weatherforecastapp.ui.main
 
+import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
@@ -57,8 +59,26 @@ class MainFragment : Fragment() {
         setUpObservers()
     }
 
+    private fun showNoInternetOldDataDialog() {
+        AlertDialog.Builder(activity)
+            .setTitle("No Internet")
+            .setMessage("Data shown is from last time app was used with internet access.")
+            .setNeutralButton("OK"){ dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
     private fun showNoInternetNoDataDialog() {
-        //TODO("Not yet implemented")
+       AlertDialog.Builder(activity)
+           .setTitle("No Internet Access or Saved Data")
+           .setMessage("Please try again later.")
+           .setNeutralButton("OK"){ dialog, _ ->
+               dialog.dismiss()
+           }
+           .create()
+           .show()
     }
 
     private fun setUpObservers() {
@@ -81,12 +101,22 @@ class MainFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             repository.getFiveDayForecastList()?.let{
                 viewModel.weatherDataList.postValue(it)
-            }?: showNoWeatherDataDialog()
+                GlobalScope.launch(Dispatchers.Main) {
+                    showNoInternetOldDataDialog()
+                }
+            }?:  GlobalScope.launch(Dispatchers.Main) {showNoWeatherDataDialog()}
         }
     }
 
     private fun showNoWeatherDataDialog() {
-        TODO("Not yet implemented")
+        AlertDialog.Builder(activity)
+            .setTitle("No Weather Data for This Location")
+            .setMessage("Please try again later with internet access.")
+            .setNeutralButton("OK"){ dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
@@ -111,7 +141,7 @@ class MainFragment : Fragment() {
         GlobalScope.launch(Dispatchers.IO) {
             repository.getLocation()?.let{
                 viewModel.location.postValue(it)
-            }?: showNoInternetNoDataDialog()
+            }?: GlobalScope.launch(Dispatchers.Main) { showNoInternetNoDataDialog() }
         }
     }
 
