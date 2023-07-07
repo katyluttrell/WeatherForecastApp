@@ -10,6 +10,10 @@ import com.google.android.material.textfield.TextInputLayout
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.ui.main.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ZipCodeDialogFragment(private val viewModel: MainViewModel) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -27,13 +31,14 @@ class ZipCodeDialogFragment(private val viewModel: MainViewModel) : DialogFragme
             val editText = dialogView.findViewById<TextInputLayout>(R.id.zipCodeTextField)
             editText?.let{
                 val entry = it.editText?.text.toString()
-                if(isValidZipCode(entry)){
-                    App.openWeatherApi.getLatLong(entry, { response ->
-                        viewModel.location.postValue(response)
-                        dialog.dismiss()
-                    }, {
-                        displayValidationError(editText)
-                    })
+                if(isValidZipCode(entry)) {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        if(viewModel.fetchLocation(entry)){
+                            dialog.dismiss()
+                        }else {
+                            launch(Dispatchers.Main) { displayValidationError(editText)}
+                        }
+                    }
                 } else{
                     displayValidationError(editText)
                 }

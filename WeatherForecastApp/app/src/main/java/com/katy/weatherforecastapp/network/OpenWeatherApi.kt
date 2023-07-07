@@ -1,52 +1,52 @@
 package com.katy.weatherforecastapp.network
 
-import android.util.Log
 import com.katy.weatherforecastapp.BuildConfig
 import com.katy.weatherforecastapp.model.FiveDayForecast
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.util.Utils
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
 
-    fun getFiveDayForecast(latitude:String, longitude:String, callback: (List<List<WeatherData>>) -> Unit){
-        apiService.getFiveDayForecast(latitude,longitude, BuildConfig.WEATHER_API_KEY, "imperial")
-            .enqueue(object: Callback<FiveDayForecast>{
-                override fun onResponse(
-                    call: Call<FiveDayForecast>,
-                    response: Response<FiveDayForecast>
-                ) {
-                   Log.d("DEBUG", response.toString())
-                    response.body()?.let {
-                        callback(Utils.organizeWeatherDataByDay(resolveTimeZone(it)))}
-                }
+    suspend fun getFiveDayForecast(
+        latitude: String,
+        longitude: String,
+    ): List<List<WeatherData>>? {
+        return try{
+            val response = withContext(Dispatchers.IO){ apiService.getFiveDayForecast(
+                latitude,
+                longitude,
+                BuildConfig.WEATHER_API_KEY,
+                "imperial"
+            )}
+            if (response.isSuccessful) {
+                response.body()?.let { Utils.organizeWeatherDataByDay(resolveTimeZone(it)) }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+}
 
-                override fun onFailure(call: Call<FiveDayForecast>, t: Throwable) {
-                    Log.d("DEBUG", t.toString())
-                }
-
-            })
-    }
-
-    fun getLatLong(zipCode:String, successCallback: (Location) -> Unit, failureCallback: () -> Unit){
-        apiService.getLatLon(zipCode, BuildConfig.WEATHER_API_KEY)
-            .enqueue(object :Callback<Location>{
-                override fun onResponse(
-                    call: Call<Location>,
-                    response: Response<Location>
-                ) {
-                    response.body()?.let { successCallback(it) }
-                }
-
-                override fun onFailure(call: Call<Location>, t: Throwable) {
-                    Log.d("DEBUG", t.toString())
-                    failureCallback()
-                }
-
-            })
+    suspend fun getLatLong(zipCode:String): Location?{
+       return  try {
+            val response = withContext(Dispatchers.IO) {
+                apiService.getLatLon(
+                    zipCode,
+                    BuildConfig.WEATHER_API_KEY
+                )
+            }
+            if (response.isSuccessful) {
+                response.body()
+            } else {
+                null
+            }
+        }catch (e: Exception){
+            null
+        }
     }
 
     private fun resolveTimeZone(fiveDayForecast: FiveDayForecast): List<WeatherData>{

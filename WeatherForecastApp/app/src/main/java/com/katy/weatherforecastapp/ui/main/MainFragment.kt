@@ -18,6 +18,7 @@ import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.NetworkCapabilities
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
+import com.katy.weatherforecastapp.ui.dialog.DialogEvent
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -30,12 +31,11 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
-    private val repository by lazy { App.repository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
     }
 
     override fun onCreateView(
@@ -47,102 +47,35 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(viewModel.hasInternet != true){
-            checkForCachedLocation()
-        } else if (!viewModel.location.isInitialized){
-            promptForZipCode()
-        }
         setUpObservers()
-    }
-    private fun showNoInternetOldDataDialog() {
-        if(!viewModel.noInternetAlertShown){
-            context?.let { AlertDialogFactory().createNoInternetOldDataDialog(it).show() }
-            viewModel.noInternetAlertShown = true
-        }
-    }
-
-    private fun showNoInternetNoDataDialog() {
-        if(!viewModel.noInternetAlertShown) {
-            context?.let {
-                AlertDialogFactory().createNoInternetNoDataDialog(it).show()
-            }
-            viewModel.noInternetAlertShown = true
-        }
+        viewModel.startNetworkOrCacheFetches()
     }
 
     private fun setUpObservers() {
         viewModel.location.observe(viewLifecycleOwner){
             setUpView(it)
-            if(viewModel.hasInternet == true) {
-                addLocationToDatabase(it)
-                fetchFiveDayForecast(it)
-            }else{
-                checkForCachedWeatherData()
-            }
         }
         viewModel.weatherDataList.observe(viewLifecycleOwner){
-            if(viewModel.hasInternet == true) {
-                addWeatherDataToDatabase(it)
-            }
             setUpForecastRecycler(it)
         }
-    }
+        viewModel.dialogEvent.observe(viewLifecycleOwner){event ->
+            event?.let {
+                showDialog(it)
+                viewModel.dialogEvent.postValue(null)
+            }
 
-    private fun checkForCachedWeatherData() {
-        GlobalScope.launch(Dispatchers.IO) {
-            val list = repository.getFiveDayForecastList()
-            if(!list.isNullOrEmpty()){
-                viewModel.weatherDataList.postValue(list)
-                GlobalScope.launch(Dispatchers.Main) {
-                    showNoInternetOldDataDialog()
-                }
-            }else{ GlobalScope.launch(Dispatchers.Main) {showNoWeatherDataDialog()}}
         }
     }
 
-    private fun showNoWeatherDataDialog() {
-        if(!viewModel.noInternetAlertShown) {
-            context?.let { AlertDialogFactory().createNoWeatherDataDialog(it).show() }
-            viewModel.noInternetAlertShown = true
-        }
-    }
-
-    private fun showNoLocationChangeDialog() {
-        context?.let {
-            AlertDialogFactory().createNoLocationChangeDialog(it)
-                .show()
-        }
-    }
-
-    private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
-        GlobalScope.launch(Dispatchers.IO) {
-            repository.deleteAllWeatherData()
-            repository.addFiveDayForecastList(data)
-        }
-    }
-
-    private fun fetchFiveDayForecast(location: Location) {
-        App.openWeatherApi.getFiveDayForecast(location.lat, location.lon){
-            viewModel.weatherDataList.postValue(it)
-        }
-    }
-
-    private fun addLocationToDatabase(location:Location) {
-        GlobalScope.launch(Dispatchers.IO) {
-            repository.addLocation(location)
-        }
-    }
-
-    private fun checkForCachedLocation() {
-        GlobalScope.launch(Dispatchers.IO) {
-            repository.getLocation()?.let{
-                viewModel.location.postValue(it)
-            }?: GlobalScope.launch(Dispatchers.Main) { showNoInternetNoDataDialog() }
+    private fun showDialog(dialogEvent: DialogEvent) {
+        when(dialogEvent){
+            DialogEvent.ZipCodePrompt -> promptForZipCode()
+            else -> AlertDialogFactory().createDialog(AlertDialog.Builder(context), dialogEvent)
         }
     }
 
     private fun promptForZipCode() {
-        activity?.supportFragmentManager?.let { ZipCodeDialogFragment(viewModel).show(it, "") }
+        activity?.supportFragmentManager?.let { ZipCodeDialogFragment(viewModel).show(it, "ZipCodeDialogFragment") }
     }
 
     private fun setUpView(location: Location) {
@@ -152,12 +85,7 @@ class MainFragment : Fragment() {
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
             viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
-            if(viewModel.hasInternet==true){
-                promptForZipCode()
-            }
-            else{
-                showNoLocationChangeDialog()
-            }
+            viewModel.editLocation()
         }
     }
     private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>){
