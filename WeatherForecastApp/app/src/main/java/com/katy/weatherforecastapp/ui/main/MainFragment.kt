@@ -70,7 +70,7 @@ class MainFragment : Fragment() {
     private fun showDialog(dialogEvent: DialogEvent) {
         when(dialogEvent){
             DialogEvent.ZipCodePrompt -> promptForZipCode()
-            else -> AlertDialogFactory().createDialog(AlertDialog.Builder(context), dialogEvent)
+            else -> AlertDialogFactory().createDialog(AlertDialog.Builder(context), dialogEvent).show()
         }
     }
 

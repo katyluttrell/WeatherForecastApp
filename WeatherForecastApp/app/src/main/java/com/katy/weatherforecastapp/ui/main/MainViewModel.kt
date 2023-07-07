@@ -27,8 +27,6 @@ class MainViewModel : ViewModel() {
         MutableLiveData<List<List<WeatherData>>>()
     }
 
-    var noInternetAlertShown = false
-
     var hasInternet: Boolean? = null
      private fun addLocationToDatabase(location:Location) {
         GlobalScope.launch(Dispatchers.IO) {
@@ -46,15 +44,15 @@ class MainViewModel : ViewModel() {
         return withContext(Dispatchers.IO){
             val receivedWeather = App.openWeatherApi.getFiveDayForecast(location.lat, location.lon)
             if(receivedWeather != null){
-                 weatherDataList.postValue(receivedWeather)
-                  addWeatherDataToDatabase(receivedWeather)
+                weatherDataList.postValue(receivedWeather)
+                addWeatherDataToDatabase(receivedWeather)
                 true
              }else{
                 false
             }
-         }
+        }
     }
-      suspend fun checkForCachedWeatherData() {
+      private suspend fun checkForCachedWeatherData() {
         return withContext(Dispatchers.IO) {
             val list = repository.getFiveDayForecastList()
             if(!list.isNullOrEmpty()){
@@ -103,15 +101,17 @@ class MainViewModel : ViewModel() {
     }
 
      fun startNetworkOrCacheFetches() {
-        if(hasInternet != true){
-            GlobalScope.launch(Dispatchers.IO) {
-                if (checkForCachedLocation()) {
-                    checkForCachedWeatherData()
-                }
-            }
-        } else if (!location.isInitialized){
-            dialogEvent.postValue(DialogEvent.ZipCodePrompt)
-        }
+         if(!location.isInitialized){
+             if(hasInternet != true){
+                 GlobalScope.launch(Dispatchers.IO) {
+                     if (checkForCachedLocation()) {
+                         checkForCachedWeatherData()
+                     }
+                 }
+             } else {
+                 dialogEvent.postValue(DialogEvent.ZipCodePrompt)
+             }
+         }
     }
 
 }
