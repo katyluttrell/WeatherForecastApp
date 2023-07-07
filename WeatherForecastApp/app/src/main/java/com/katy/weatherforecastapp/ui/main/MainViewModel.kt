@@ -16,4 +16,7 @@ class MainViewModel : ViewModel() {
     }
 
     var noInternetAlertShown = false
+
+    var hasInternet: Boolean? = null
+
 }

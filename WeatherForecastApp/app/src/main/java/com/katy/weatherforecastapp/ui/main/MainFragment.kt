@@ -17,6 +17,7 @@ import com.katy.weatherforecastapp.adapter.DayForecastAdapter
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.NetworkCapabilities
+import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,12 +30,11 @@ class MainFragment : Fragment() {
     }
 
     private lateinit var viewModel: MainViewModel
-    private var hasInternet: Boolean? = null
     private val repository by lazy { App.repository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
+        viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
@@ -47,7 +47,7 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(hasInternet != true){
+        if(viewModel.hasInternet != true){
             checkForCachedLocation()
         } else if (!viewModel.location.isInitialized){
             promptForZipCode()
@@ -56,28 +56,16 @@ class MainFragment : Fragment() {
     }
     private fun showNoInternetOldDataDialog() {
         if(!viewModel.noInternetAlertShown){
-            AlertDialog.Builder(activity)
-                .setTitle(R.string.no_internet)
-                .setMessage(getString(R.string.old_data_message))
-                .setNeutralButton(R.string.ok){ dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            context?.let { AlertDialogFactory().createNoInternetOldDataDialog(it).show() }
             viewModel.noInternetAlertShown = true
         }
     }
 
     private fun showNoInternetNoDataDialog() {
         if(!viewModel.noInternetAlertShown) {
-            AlertDialog.Builder(activity)
-                .setTitle(getString(R.string.no_internet_no_data))
-                .setMessage(R.string.try_again_with_internet)
-                .setNeutralButton(R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            context?.let {
+                AlertDialogFactory().createNoInternetNoDataDialog(it).show()
+            }
             viewModel.noInternetAlertShown = true
         }
     }
@@ -85,7 +73,7 @@ class MainFragment : Fragment() {
     private fun setUpObservers() {
         viewModel.location.observe(viewLifecycleOwner){
             setUpView(it)
-            if(hasInternet == true) {
+            if(viewModel.hasInternet == true) {
                 addLocationToDatabase(it)
                 fetchFiveDayForecast(it)
             }else{
@@ -93,7 +81,7 @@ class MainFragment : Fragment() {
             }
         }
         viewModel.weatherDataList.observe(viewLifecycleOwner){
-            if(hasInternet == true) {
+            if(viewModel.hasInternet == true) {
                 addWeatherDataToDatabase(it)
             }
             setUpForecastRecycler(it)
@@ -114,27 +102,16 @@ class MainFragment : Fragment() {
 
     private fun showNoWeatherDataDialog() {
         if(!viewModel.noInternetAlertShown) {
-            AlertDialog.Builder(activity)
-                .setTitle(getString(R.string.no_weather_data))
-                .setMessage(getString(R.string.try_again_with_internet))
-                .setNeutralButton(R.string.ok) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            context?.let { AlertDialogFactory().createNoWeatherDataDialog(it).show() }
             viewModel.noInternetAlertShown = true
         }
     }
 
     private fun showNoLocationChangeDialog() {
-        AlertDialog.Builder(activity)
-            .setTitle(getString(R.string.no_internet))
-            .setMessage(getString(R.string.no_internet_location_change_message))
-            .setNeutralButton(getString(R.string.ok)) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .create()
-            .show()
+        context?.let {
+            AlertDialogFactory().createNoLocationChangeDialog(it)
+                .show()
+        }
     }
 
     private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
@@ -174,8 +151,8 @@ class MainFragment : Fragment() {
         val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
-            hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
-            if(hasInternet==true){
+            viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
+            if(viewModel.hasInternet==true){
                 promptForZipCode()
             }
             else{
