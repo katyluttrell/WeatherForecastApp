@@ -14,6 +14,8 @@ object Utils{
             context.getString(R.string.today)
         } else if (today.plusDays(1L).dayOfYear == date.dayOfYear) {
             context.getString(R.string.tomorrow)
+        }else if (today.minusDays(1L).dayOfYear == date.dayOfYear) {
+            context.getString(R.string.yesterday)
         } else {
             date.dayOfWeek.name.capitalize()
         }

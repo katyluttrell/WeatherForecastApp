@@ -23,4 +23,5 @@
     <string name="old_data_message">Data shown is from last time app was used with internet access.</string>
     <string name="network_fetch_error">Network Error</string>
     <string name="please_try_again_later">Please try again later.</string>
+    <string name="yesterday">Yesterday</string>
 </resources>
