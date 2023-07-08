@@ -16,8 +16,9 @@ import com.katy.weatherforecastapp.adapter.TimeForecastAdapter
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
 import com.katy.weatherforecastapp.viewmodel.SingleDayForecastViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-class SingleDayForecastFragment : Fragment() {
+class SingleDayForecastFragment: Fragment() {
 
     companion object {
         const val WEATHER_DATA_KEY = "DayWeatherData"
@@ -49,10 +50,11 @@ class SingleDayForecastFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(!dayWeatherData.isNullOrEmpty()) {
-            populateCurrentWeatherData(dayWeatherData!![0])
-            if(dayWeatherData!!.size > 1){
-                setUpLaterTimesRecycler(dayWeatherData!!.subList(1, dayWeatherData!!.size))
+        val currentData = dayWeatherData
+        if(!currentData.isNullOrEmpty()) {
+            populateCurrentWeatherData(currentData[0])
+            if(currentData.size > 1){
+                setUpLaterTimesRecycler(currentData.subList(1, currentData.size))
             }
         }
     }

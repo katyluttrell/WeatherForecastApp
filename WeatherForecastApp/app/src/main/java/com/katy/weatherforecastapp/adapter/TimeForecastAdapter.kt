@@ -13,6 +13,7 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
 import com.katy.weatherforecastapp.util.Utils
+import javax.inject.Inject
 
 class TimeForecastAdapter(private val dataList: List<WeatherData>, private val activity: Activity): RecyclerView.Adapter<TimeForecastAdapter.ViewHolder>(){
 

@@ -1,5 +1,7 @@
 package com.katy.weatherforecastapp.adapter
 
+import android.app.Activity
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,10 @@ import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
 import com.katy.weatherforecastapp.ui.SingleDayForecastFragment
 import com.katy.weatherforecastapp.util.Utils
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.android.components.ActivityComponent
 
 class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity): RecyclerView.Adapter<DayForecastAdapter.ViewHolder>(){
 

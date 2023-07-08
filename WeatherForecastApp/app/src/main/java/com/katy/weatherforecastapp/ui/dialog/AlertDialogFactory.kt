@@ -3,8 +3,9 @@ package com.katy.weatherforecastapp.ui.dialog
 import android.app.AlertDialog
 import android.app.AlertDialog.Builder
 import com.katy.weatherforecastapp.R
+import javax.inject.Inject
 
-class AlertDialogFactory {
+class AlertDialogFactory @Inject constructor() {
     fun createDialog(builder: Builder, mainViewDialog: MainViewDialog, onOkCallback: OnOkCallback?): AlertDialog =
         okButtonDecorator(titleAndMessageDecorator(builder, mainViewDialog), onOkCallback).create()
 

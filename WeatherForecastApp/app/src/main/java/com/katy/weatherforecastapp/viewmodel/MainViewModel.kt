@@ -5,14 +5,22 @@ import androidx.lifecycle.ViewModel
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.network.OpenWeatherApi
+import com.katy.weatherforecastapp.repository.WeatherRepository
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
-    private val repository by lazy { App.repository }
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: WeatherRepository,
+    private val openWeatherApi: OpenWeatherApi
+    ): ViewModel() {
 
     val currentDialog: MutableLiveData<MainViewDialog?> by lazy{
         MutableLiveData<MainViewDialog?>()
@@ -41,7 +49,7 @@ class MainViewModel : ViewModel() {
 
      private suspend fun fetchFiveDayForecast(location: Location):Boolean {
         return withContext(Dispatchers.IO){
-            val receivedWeather = App.openWeatherApi.getFiveDayForecast(location.lat, location.lon)
+            val receivedWeather = openWeatherApi.getFiveDayForecast(location.lat, location.lon)
             if(receivedWeather != null){
                 weatherDataList.postValue(receivedWeather)
                 addWeatherDataToDatabase(receivedWeather)
@@ -65,7 +73,7 @@ class MainViewModel : ViewModel() {
 
     suspend fun fetchLocation(zipcode:String): Boolean {
         return withContext(Dispatchers.IO) {
-            val receivedLocation = App.openWeatherApi.getLatLong(zipcode)
+            val receivedLocation = openWeatherApi.getLatLong(zipcode)
             if (receivedLocation != null) {
                 location.postValue(receivedLocation)
                 addLocationToDatabase(receivedLocation)

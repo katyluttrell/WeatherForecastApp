@@ -15,15 +15,22 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.NetworkCapabilities
+import com.katy.weatherforecastapp.network.NetworkUtils
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import com.katy.weatherforecastapp.ui.dialog.OnOkCallback
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
+    @Inject
+    lateinit var networkUtils: NetworkUtils
+    @Inject
+    lateinit var alertDialogFactory: AlertDialogFactory
     companion object {
         fun newInstance() = MainFragment()
     }
@@ -33,7 +40,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
+        viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
     }
 
     override fun onCreateView(
@@ -68,7 +75,7 @@ class MainFragment : Fragment() {
     private fun showDialog(mainViewDialog: MainViewDialog) {
         when(mainViewDialog){
             MainViewDialog.ZipCodePrompt -> promptForZipCode()
-            else -> AlertDialogFactory().createDialog(
+            else -> alertDialogFactory.createDialog(
                 AlertDialog.Builder(context),
                 mainViewDialog, object :OnOkCallback{
                     override fun onOkPress() {
@@ -88,7 +95,7 @@ class MainFragment : Fragment() {
         val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
-            viewModel.hasInternet = NetworkCapabilities().hasInternetAccess(requireContext())
+            viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
             viewModel.editLocation()
         }
     }

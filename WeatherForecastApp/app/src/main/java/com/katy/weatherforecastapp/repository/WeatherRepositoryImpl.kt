@@ -5,8 +5,9 @@ import com.katy.weatherforecastapp.database.dao.WeatherDataDao
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.util.Utils
+import javax.inject.Inject
 
-class WeatherRepositoryImpl (private val locationDao: LocationDao, private val weatherDataDao: WeatherDataDao): WeatherRepository{
+class WeatherRepositoryImpl @Inject constructor(private val locationDao: LocationDao, private val weatherDataDao: WeatherDataDao): WeatherRepository{
     override suspend fun addFiveDayForecastList(forecast: List<List<WeatherData>>) {
        forecast.flatten().forEach { weatherDataDao.addWeatherData(it) }
     }

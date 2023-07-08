@@ -7,8 +7,9 @@ import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OpenWeatherApi(private val apiService: OpenWeatherApiService) {
+class OpenWeatherApi @Inject constructor(private val apiService: OpenWeatherApiService) {
 
     suspend fun getFiveDayForecast(
         latitude: String,
