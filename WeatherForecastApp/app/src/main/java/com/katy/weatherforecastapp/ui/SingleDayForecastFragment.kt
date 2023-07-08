@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.ui.weatherDetail
+package com.katy.weatherforecastapp.ui
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -15,12 +15,13 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.TimeForecastAdapter
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
+import com.katy.weatherforecastapp.viewmodel.SingleDayForecastViewModel
 
 class SingleDayForecastFragment : Fragment() {
 
     companion object {
         const val WEATHER_DATA_KEY = "DayWeatherData"
-        fun newInstance(dayWeatherData: List<WeatherData>):SingleDayForecastFragment{
+        fun newInstance(dayWeatherData: List<WeatherData>): SingleDayForecastFragment {
             val fragment = SingleDayForecastFragment()
             val args = Bundle()
             args.putParcelableArrayList(WEATHER_DATA_KEY, ArrayList<WeatherData>(dayWeatherData))

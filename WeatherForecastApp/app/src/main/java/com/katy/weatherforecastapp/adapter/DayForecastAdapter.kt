@@ -12,7 +12,7 @@ import coil.load
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
-import com.katy.weatherforecastapp.ui.weatherDetail.SingleDayForecastFragment
+import com.katy.weatherforecastapp.ui.SingleDayForecastFragment
 import com.katy.weatherforecastapp.util.Utils
 
 class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity): RecyclerView.Adapter<DayForecastAdapter.ViewHolder>(){

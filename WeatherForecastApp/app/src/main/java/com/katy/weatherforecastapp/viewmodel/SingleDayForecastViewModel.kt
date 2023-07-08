@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.ui.weatherDetail
+package com.katy.weatherforecastapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 

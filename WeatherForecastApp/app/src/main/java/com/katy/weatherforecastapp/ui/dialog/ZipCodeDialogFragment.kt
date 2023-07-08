@@ -7,13 +7,11 @@ import android.widget.Button
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
-import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
-import com.katy.weatherforecastapp.ui.main.MainViewModel
+import com.katy.weatherforecastapp.viewmodel.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ZipCodeDialogFragment(private val viewModel: MainViewModel) : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

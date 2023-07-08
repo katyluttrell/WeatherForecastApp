@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.ui.main
+package com.katy.weatherforecastapp.ui
 
 import android.app.AlertDialog
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
 import com.katy.weatherforecastapp.model.Location
@@ -20,9 +19,7 @@ import com.katy.weatherforecastapp.network.NetworkCapabilities
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.DialogEvent
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.katy.weatherforecastapp.viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
 

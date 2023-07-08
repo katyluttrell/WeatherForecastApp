@@ -2,7 +2,7 @@ package com.katy.weatherforecastapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.katy.weatherforecastapp.ui.main.MainFragment
+import com.katy.weatherforecastapp.ui.MainFragment
 
 class MainActivity : AppCompatActivity() {
 

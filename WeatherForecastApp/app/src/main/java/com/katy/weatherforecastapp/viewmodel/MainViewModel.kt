@@ -1,11 +1,10 @@
-package com.katy.weatherforecastapp.ui.main
+package com.katy.weatherforecastapp.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.NetworkCapabilities
 import com.katy.weatherforecastapp.ui.dialog.DialogEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
