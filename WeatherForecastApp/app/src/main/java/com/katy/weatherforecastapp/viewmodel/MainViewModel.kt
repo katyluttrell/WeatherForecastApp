@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.ui.dialog.DialogEvent
+import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -14,8 +14,8 @@ import kotlinx.coroutines.withContext
 class MainViewModel : ViewModel() {
     private val repository by lazy { App.repository }
 
-    val dialogEvent: MutableLiveData<DialogEvent?> by lazy{
-        MutableLiveData<DialogEvent?>()
+    val currentDialog: MutableLiveData<MainViewDialog?> by lazy{
+        MutableLiveData<MainViewDialog?>()
     }
 
     val location: MutableLiveData<Location> by lazy {
@@ -56,9 +56,9 @@ class MainViewModel : ViewModel() {
             val list = repository.getFiveDayForecastList()
             if(!list.isNullOrEmpty()){
                 weatherDataList.postValue(list)
-                dialogEvent.postValue(DialogEvent.NoInternetOldData)
+                currentDialog.postValue(MainViewDialog.NoInternetOldData)
             }else {
-                dialogEvent.postValue(DialogEvent.NoInternetOldData)
+                currentDialog.postValue(MainViewDialog.NoInternetOldData)
             }
         }
     }
@@ -90,11 +90,11 @@ class MainViewModel : ViewModel() {
     }
 
     fun editLocation() {
-        dialogEvent.postValue(
+        currentDialog.postValue(
             if(hasInternet==true){
-                DialogEvent.ZipCodePrompt
+                MainViewDialog.ZipCodePrompt
             } else{
-                DialogEvent.NoLocationChange
+                MainViewDialog.NoLocationChange
             }
         )
     }
@@ -108,7 +108,7 @@ class MainViewModel : ViewModel() {
                      }
                  }
              } else {
-                 dialogEvent.postValue(DialogEvent.ZipCodePrompt)
+                 currentDialog.postValue(MainViewDialog.ZipCodePrompt)
              }
          }
     }

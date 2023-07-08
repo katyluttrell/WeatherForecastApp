@@ -1,22 +1,24 @@
 package com.katy.weatherforecastapp.ui.dialog
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.AlertDialog.Builder
-import android.content.Context
 import com.katy.weatherforecastapp.R
 
 class AlertDialogFactory {
+    fun createDialog(builder: Builder, mainViewDialog: MainViewDialog, onOkCallback: OnOkCallback?): AlertDialog =
+        okButtonDecorator(titleAndMessageDecorator(builder, mainViewDialog), onOkCallback).create()
 
-    fun createDialog(builder: Builder, dialogEvent: DialogEvent): AlertDialog{
-        return when(dialogEvent){
-            DialogEvent.NoInternetLocationOnly -> okButtonDecorator(noWeatherDataDecorator(builder)).create()
-            DialogEvent.NoInternetNoData -> okButtonDecorator(noInternetNoDataDecorator(builder)).create()
-            DialogEvent.NoInternetOldData -> okButtonDecorator(noInternetOldDataDecorator(builder)).create()
-            DialogEvent.NoLocationChange -> okButtonDecorator(noLocationChangeDecorator(builder)).create()
-            else -> okButtonDecorator(networkFetchErrorDecorator(builder)).create()
+
+    private fun titleAndMessageDecorator(builder: Builder, mainViewDialog: MainViewDialog): Builder{
+         return when(mainViewDialog){
+            MainViewDialog.NoInternetLocationOnly -> noWeatherDataDecorator(builder)
+            MainViewDialog.NoInternetNoData -> noInternetNoDataDecorator(builder)
+            MainViewDialog.NoInternetOldData ->noInternetOldDataDecorator(builder)
+            MainViewDialog.NoLocationChange -> noLocationChangeDecorator(builder)
+            else -> networkFetchErrorDecorator(builder)
         }
     }
+
 
      private fun noInternetOldDataDecorator(builder: Builder): Builder {
          return builder
@@ -24,9 +26,10 @@ class AlertDialogFactory {
              .setMessage(R.string.old_data_message)
      }
 
-    private fun okButtonDecorator(builder: Builder): Builder{
+    private fun okButtonDecorator(builder: Builder, onOkCallback: OnOkCallback?): Builder{
         return builder.setNeutralButton(R.string.ok) { dialog, _ ->
             dialog.dismiss()
+            onOkCallback?.onOkPress()
         }
     }
 
@@ -53,5 +56,8 @@ class AlertDialogFactory {
             .setTitle(R.string.network_fetch_error)
             .setMessage(R.string.please_try_again_later)
     }
-}
 
+}
+interface OnOkCallback{
+    fun onOkPress()
+}

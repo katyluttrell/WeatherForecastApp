@@ -17,7 +17,8 @@ import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.NetworkCapabilities
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
-import com.katy.weatherforecastapp.ui.dialog.DialogEvent
+import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
+import com.katy.weatherforecastapp.ui.dialog.OnOkCallback
 import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
 
@@ -55,19 +56,25 @@ class MainFragment : Fragment() {
         viewModel.weatherDataList.observe(viewLifecycleOwner){
             setUpForecastRecycler(it)
         }
-        viewModel.dialogEvent.observe(viewLifecycleOwner){event ->
+        viewModel.currentDialog.observe(viewLifecycleOwner){ event ->
             event?.let {
                 showDialog(it)
-                viewModel.dialogEvent.postValue(null)
+                viewModel.currentDialog.postValue(null)
             }
 
         }
     }
 
-    private fun showDialog(dialogEvent: DialogEvent) {
-        when(dialogEvent){
-            DialogEvent.ZipCodePrompt -> promptForZipCode()
-            else -> AlertDialogFactory().createDialog(AlertDialog.Builder(context), dialogEvent).show()
+    private fun showDialog(mainViewDialog: MainViewDialog) {
+        when(mainViewDialog){
+            MainViewDialog.ZipCodePrompt -> promptForZipCode()
+            else -> AlertDialogFactory().createDialog(
+                AlertDialog.Builder(context),
+                mainViewDialog, object :OnOkCallback{
+                    override fun onOkPress() {
+                        viewModel.currentDialog.postValue(null)
+                    }
+                }).show()
         }
     }
 
