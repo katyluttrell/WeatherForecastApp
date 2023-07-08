@@ -5,6 +5,8 @@ import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.database.WeatherDatabase
 import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.database.dao.WeatherDataDao
+import com.katy.weatherforecastapp.repository.LocationRepository
+import com.katy.weatherforecastapp.repository.LocationRepositoryImpl
 import com.katy.weatherforecastapp.repository.WeatherRepository
 import com.katy.weatherforecastapp.repository.WeatherRepositoryImpl
 import dagger.Binds
@@ -23,6 +25,9 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindWeatherRepository(implementation: WeatherRepositoryImpl): WeatherRepository
+
+    @Binds
+    abstract fun bindLocationRepository(implementation: LocationRepositoryImpl): LocationRepository
 
 
 }

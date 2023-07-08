@@ -7,7 +7,7 @@ import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.util.Utils
 import javax.inject.Inject
 
-class WeatherRepositoryImpl @Inject constructor(private val locationDao: LocationDao, private val weatherDataDao: WeatherDataDao): WeatherRepository{
+class WeatherRepositoryImpl @Inject constructor(private val weatherDataDao: WeatherDataDao): WeatherRepository{
     override suspend fun addFiveDayForecastList(forecast: List<List<WeatherData>>) {
        forecast.flatten().forEach { weatherDataDao.addWeatherData(it) }
     }
@@ -19,9 +19,5 @@ class WeatherRepositoryImpl @Inject constructor(private val locationDao: Locatio
     override suspend fun deleteAllWeatherData() {
         weatherDataDao.deleteAll()
     }
-
-    override suspend fun addLocation(location: Location) = locationDao.addLocation(location)
-
-    override suspend fun getLocation(): Location? = locationDao.getLocation()
 
 }

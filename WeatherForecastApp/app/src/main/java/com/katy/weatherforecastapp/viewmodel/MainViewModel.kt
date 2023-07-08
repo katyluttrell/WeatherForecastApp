@@ -2,13 +2,12 @@ package com.katy.weatherforecastapp.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.katy.weatherforecastapp.App
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.OpenWeatherApi
+import com.katy.weatherforecastapp.repository.LocationRepository
 import com.katy.weatherforecastapp.repository.WeatherRepository
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -18,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: WeatherRepository,
+    private val weatherRepository: WeatherRepository,
+    private val locationRepository: LocationRepository,
     private val openWeatherApi: OpenWeatherApi
     ): ViewModel() {
 
@@ -37,13 +37,13 @@ class MainViewModel @Inject constructor(
     var hasInternet: Boolean? = null
      private fun addLocationToDatabase(location:Location) {
         GlobalScope.launch(Dispatchers.IO) {
-            repository.addLocation(location)
+            locationRepository.addLocation(location)
         }
     }
     private fun addWeatherDataToDatabase(data: List<List<WeatherData>>) {
         GlobalScope.launch(Dispatchers.IO) {
-            repository.deleteAllWeatherData()
-            repository.addFiveDayForecastList(data)
+            weatherRepository.deleteAllWeatherData()
+            weatherRepository.addFiveDayForecastList(data)
         }
     }
 
@@ -61,7 +61,7 @@ class MainViewModel @Inject constructor(
     }
       private suspend fun checkForCachedWeatherData() {
         return withContext(Dispatchers.IO) {
-            val list = repository.getFiveDayForecastList()
+            val list = weatherRepository.getFiveDayForecastList()
             if(!list.isNullOrEmpty()){
                 weatherDataList.postValue(list)
                 currentDialog.postValue(MainViewDialog.NoInternetOldData)
@@ -87,7 +87,7 @@ class MainViewModel @Inject constructor(
 
     suspend fun checkForCachedLocation():Boolean {
         return withContext(Dispatchers.IO) {
-            val cachedLocation = repository.getLocation()
+            val cachedLocation = locationRepository.getLocation()
             if(cachedLocation!= null){
                 location.postValue(cachedLocation)
                 true
