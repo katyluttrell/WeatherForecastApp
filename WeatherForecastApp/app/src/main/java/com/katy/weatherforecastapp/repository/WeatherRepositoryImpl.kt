@@ -13,8 +13,12 @@ class WeatherRepositoryImpl @Inject constructor(private val weatherDataDao: Weat
     }
 
     override suspend fun getFiveDayForecastList(): List<List<WeatherData>>? {
-        return weatherDataDao.getWeatherData()
-            ?.let { Utils.organizeWeatherDataByDay(Utils.sortWeatherDataByTimeStamp(it)) }
+        val data = weatherDataDao.getWeatherData()
+        return if (data.isEmpty()) {
+            null
+        } else {
+            Utils.organizeWeatherDataByDay(Utils.sortWeatherDataByTimeStamp(data))
+        }
     }
 
     override suspend fun deleteAllWeatherData() {

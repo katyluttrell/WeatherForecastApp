@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
-class WeatherDatabaseTest {
+class WeatherDatabaseTestLocationTable {
     private lateinit var locationDao: LocationDao
     private lateinit var database: WeatherDatabase
     private val location = LocationEntity(

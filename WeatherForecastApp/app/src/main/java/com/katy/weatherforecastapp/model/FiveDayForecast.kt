@@ -15,10 +15,10 @@ data class FiveDayForecast(
 @Entity(tableName = "weatherData")
 @Parcelize
 data class WeatherData(
+    @PrimaryKey @TypeConverters(DateAdapter::class) @field:Json(name = "dt_txt") var dtTxt: LocalDateTime,
     @Embedded @field:Json(name = "main") val main: Main,
     @Embedded @field:Json(name = "weather") val weather: Weather,
     @Embedded @field:Json(name = "wind") val wind: Wind,
-    @PrimaryKey @TypeConverters(DateAdapter::class) @field:Json(name = "dt_txt") var dtTxt: LocalDateTime
 ) : Parcelable
 
 @Parcelize

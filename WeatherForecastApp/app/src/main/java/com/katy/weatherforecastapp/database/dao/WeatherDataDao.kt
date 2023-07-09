@@ -6,7 +6,8 @@ import com.katy.weatherforecastapp.model.WeatherData
 @Dao
 interface WeatherDataDao {
     @Query("SELECT * FROM weatherData")
-    fun getWeatherData(): List<WeatherData>?
+    fun getWeatherData(): List<WeatherData>
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addWeatherData(weatherData: WeatherData)
