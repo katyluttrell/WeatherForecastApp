@@ -1,7 +1,7 @@
 package com.katy.weatherforecastapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.katy.weatherforecastapp.ui.MainFragment
 import dagger.hilt.android.AndroidEntryPoint
 

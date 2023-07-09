@@ -1,6 +1,6 @@
 package com.katy.weatherforecastapp.ui.dialog
 
-sealed class MainViewDialog{
+sealed class MainViewDialog {
     object ZipCodePrompt : MainViewDialog()
     object NoInternetOldData : MainViewDialog()
     object NoInternetNoData : MainViewDialog()

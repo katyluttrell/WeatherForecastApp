@@ -1,27 +1,31 @@
 package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.BuildConfig
+import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.FiveDayForecast
-import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.model.remote.NetworkLocation
+import com.katy.weatherforecastapp.model.remote.asEntity
 import com.katy.weatherforecastapp.util.Utils
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class OpenWeatherApi @Inject constructor(private val apiService: OpenWeatherApiService) {
+class OpenWeatherApi @Inject constructor(
+    private val apiService: OpenWeatherApiService,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) {
 
     suspend fun getFiveDayForecast(
         latitude: String,
         longitude: String,
     ): List<List<WeatherData>>? {
-        return try{
-            val response = withContext(Dispatchers.IO){ apiService.getFiveDayForecast(
-                latitude,
-                longitude,
-                BuildConfig.WEATHER_API_KEY,
-                "imperial"
-            )}
+        return try {
+            val response = withContext(ioDispatcher) {
+                apiService.getFiveDayForecast(
+                    latitude, longitude, BuildConfig.WEATHER_API_KEY, "imperial"
+                )
+            }
             if (response.isSuccessful) {
                 response.body()?.let { Utils.organizeWeatherDataByDay(resolveTimeZone(it)) }
             } else {
@@ -30,30 +34,31 @@ class OpenWeatherApi @Inject constructor(private val apiService: OpenWeatherApiS
         } catch (e: Exception) {
             null
         }
-}
+    }
 
-    suspend fun getLatLong(zipCode:String): Location?{
-       return  try {
-            val response = withContext(Dispatchers.IO) {
+    suspend fun getLatLong(zipCode: String): NetworkResult<*> {
+        return try {
+            val response = withContext(ioDispatcher) {
                 apiService.getLatLon(
-                    zipCode,
-                    BuildConfig.WEATHER_API_KEY
+                    zipCode, BuildConfig.WEATHER_API_KEY
                 )
             }
-            if (response.isSuccessful) {
-                response.body()
+            if (response.isSuccessful && response.body() != null) {
+                NetworkResult.Success((response.body() as NetworkLocation).asEntity(zipCode))
+            } else if (response.code() == 404) {
+                NetworkResult.BadRequest
             } else {
-                null
+                NetworkResult.NetworkError
             }
-        }catch (e: Exception){
-            null
+        } catch (e: Exception) {
+            NetworkResult.NetworkError
         }
     }
 
-    private fun resolveTimeZone(fiveDayForecast: FiveDayForecast): List<WeatherData>{
+    private fun resolveTimeZone(fiveDayForecast: FiveDayForecast): List<WeatherData> {
         val offset = fiveDayForecast.city.timezone
         val list = fiveDayForecast.list
-        list.forEach{ it.dtTxt = Utils.convertToLocalTime(it.dtTxt, offset) }
+        list.forEach { it.dtTxt = Utils.convertToLocalTime(it.dtTxt, offset) }
         return list
     }
 

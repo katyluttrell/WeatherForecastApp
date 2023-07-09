@@ -1,13 +1,64 @@
 package com.katy.weatherforecastapp.repository
 
+import android.content.Context
 import com.katy.weatherforecastapp.database.dao.LocationDao
-import com.katy.weatherforecastapp.database.dao.WeatherDataDao
+import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.Location
+import com.katy.weatherforecastapp.model.local.LocationEntity
+import com.katy.weatherforecastapp.model.local.asExternalModel
+import com.katy.weatherforecastapp.network.NetworkResult
+import com.katy.weatherforecastapp.network.NetworkUtils
+import com.katy.weatherforecastapp.network.OpenWeatherApi
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LocationRepositoryImpl @Inject constructor(private val locationDao: LocationDao): LocationRepository  {
+class LocationRepositoryImpl @Inject constructor(
+    private val locationDao: LocationDao,
+    private val openWeatherApi: OpenWeatherApi,
+    private val networkUtils: NetworkUtils,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+) : LocationRepository {
 
-    override suspend fun addLocation(location: Location) = locationDao.addLocation(location)
 
-    override suspend fun getLocation(): Location? = locationDao.getLocation()
+    override suspend fun cacheLocation(location: LocationEntity) = locationDao.addLocation(location)
+
+    override suspend fun getLocationFlow(
+        zipcode: String,
+        errorCallbacks: DataErrorCallbacks
+    ): Flow<Location> {
+        val flow = locationDao.getLocation(zipcode)
+        val location = flow.first()
+        if (location == null) {
+            if (networkUtils.hasInternetAccess(context)) {
+                fetchLocation(zipcode, errorCallbacks)
+            } else {
+                errorCallbacks.onNoInternetNoData()
+            }
+        }
+        return flow.map { it?.asExternalModel() }.filterNotNull()
+    }
+
+    private suspend fun fetchLocation(zipcode: String, errorCallbacks: DataErrorCallbacks) {
+        withContext(ioDispatcher) {
+            when (val result = openWeatherApi.getLatLong(zipcode)) {
+                is NetworkResult.Success -> {
+                    cacheLocation(result.response as LocationEntity)
+                    //TODO start weather request
+                }
+                is NetworkResult.BadRequest -> {
+                    errorCallbacks.onInvalidZipcode()
+                }
+                is NetworkResult.NetworkError -> {
+                    errorCallbacks.onNetworkError()
+                }
+            }
+        }
+    }
 }

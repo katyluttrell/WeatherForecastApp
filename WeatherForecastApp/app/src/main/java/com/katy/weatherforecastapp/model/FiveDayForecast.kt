@@ -1,14 +1,11 @@
 package com.katy.weatherforecastapp.model
-import android.os.Parcel
+
 import android.os.Parcelable
 import androidx.room.*
-import com.google.android.material.shape.ShapePath.PathArcOperation
 import com.katy.weatherforecastapp.adapter.DateAdapter
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
-import java.util.UUID
 
 data class FiveDayForecast(
     @field:Json(name = "list") val list: List<WeatherData>,
@@ -18,16 +15,11 @@ data class FiveDayForecast(
 @Entity(tableName = "weatherData")
 @Parcelize
 data class WeatherData(
-    @Embedded
-    @field:Json(name = "main") val main: Main,
-    @Embedded
-    @field:Json(name = "weather") val weather: Weather,
-    @Embedded
-    @field:Json(name = "wind") val wind: Wind,
-    @PrimaryKey
-    @TypeConverters(DateAdapter::class)
-    @field:Json(name = "dt_txt") var dtTxt: LocalDateTime
-):Parcelable
+    @Embedded @field:Json(name = "main") val main: Main,
+    @Embedded @field:Json(name = "weather") val weather: Weather,
+    @Embedded @field:Json(name = "wind") val wind: Wind,
+    @PrimaryKey @TypeConverters(DateAdapter::class) @field:Json(name = "dt_txt") var dtTxt: LocalDateTime
+) : Parcelable
 
 @Parcelize
 data class Main(
@@ -35,20 +27,20 @@ data class Main(
     @field:Json(name = "temp_min") val tempMin: Double,
     @field:Json(name = "temp_max") val tempMax: Double,
     @field:Json(name = "humidity") val humidity: String,
-):Parcelable
+) : Parcelable
 
 @Parcelize
 data class Weather(
     @field:Json(name = "main") val main: String,
     @field:Json(name = "description") val description: String,
     @field:Json(name = "icon") val icon: String
-):Parcelable
+) : Parcelable
 
 @Parcelize
 data class Wind(
-    @field:Json(name = "speed") val speed: Double,
-    @field:Json(name = "gust") val gust: Double
-): Parcelable
+    @field:Json(name = "speed") val speed: Double, @field:Json(name = "gust") val gust: Double
+) : Parcelable
+
 data class City(
     @field:Json(name = "timezone") val timezone: Int
 )

@@ -8,23 +8,27 @@ import androidx.room.TypeConverters
 import com.katy.weatherforecastapp.adapter.DateAdapter
 import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.database.dao.WeatherDataDao
-import com.katy.weatherforecastapp.model.Location
+import com.katy.weatherforecastapp.database.migrations.migration_1_2
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.model.local.LocationEntity
 
-const val DATABASE_VERSION = 1
+const val DATABASE_VERSION = 2
+
 @Database(
-    entities = [Location::class, WeatherData::class],
+    entities = [LocationEntity::class, WeatherData::class],
     version = DATABASE_VERSION
 )
 @TypeConverters(DateAdapter::class)
-abstract class WeatherDatabase: RoomDatabase() {
-    companion object{
+abstract class WeatherDatabase : RoomDatabase() {
+    companion object {
         private const val DATABASE_NAME = "Weather"
-        fun buildDatabase(context: Context): WeatherDatabase{
+        fun buildDatabase(context: Context): WeatherDatabase {
             return Room.databaseBuilder(
                 context,
                 WeatherDatabase::class.java,
-                DATABASE_NAME)
+                DATABASE_NAME
+            )
+                .addMigrations(migration_1_2)
                 .build()
         }
     }

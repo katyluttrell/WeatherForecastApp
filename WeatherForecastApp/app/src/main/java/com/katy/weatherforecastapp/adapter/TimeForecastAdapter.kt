@@ -13,13 +13,13 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
 import com.katy.weatherforecastapp.util.Utils
-import javax.inject.Inject
 
-class TimeForecastAdapter(private val dataList: List<WeatherData>, private val activity: Activity): RecyclerView.Adapter<TimeForecastAdapter.ViewHolder>(){
+class TimeForecastAdapter(private val dataList: List<WeatherData>, private val activity: Activity) :
+    RecyclerView.Adapter<TimeForecastAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.day_forecast_card, parent, false)
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.day_forecast_card, parent, false)
         return ViewHolder(view)
     }
 
@@ -33,9 +33,10 @@ class TimeForecastAdapter(private val dataList: List<WeatherData>, private val a
         holder.chevron.visibility = View.GONE
         holder.dateText.text = Utils.formatTime(data.dtTxt)
         holder.weatherText.text = data.weather.main
-        holder.tempText.text =  activity.getString(R.string.temp_format,data.main.temp.toInt())
+        holder.tempText.text = activity.getString(R.string.temp_format, data.main.temp.toInt())
         setTempIconColor(holder.tempIcon, data.main.temp)
-        holder.windText.text = activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
+        holder.windText.text =
+            activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
     }
 
     private fun setWeatherImage(weatherImage: ImageView, icon: String) {
@@ -51,7 +52,11 @@ class TimeForecastAdapter(private val dataList: List<WeatherData>, private val a
         when {
             temp <= 32.0 -> {
                 tempIcon.contentDescription = activity.getString(R.string.blue_thermostat_icon)
-                tempIcon.setColorFilter(ContextCompat.getColor(activity, R.color.md_theme_light_primary))
+                tempIcon.setColorFilter(
+                    ContextCompat.getColor(
+                        activity, R.color.md_theme_light_primary
+                    )
+                )
             }
             temp >= 85.0 -> {
                 tempIcon.contentDescription = activity.getString(R.string.red_thermostat_icon)
@@ -59,7 +64,8 @@ class TimeForecastAdapter(private val dataList: List<WeatherData>, private val a
                 tempIcon.setColorFilter(color)
             }
             else -> {
-                tempIcon.contentDescription = activity.getString(R.string.thermostat_icon_content_description)
+                tempIcon.contentDescription =
+                    activity.getString(R.string.thermostat_icon_content_description)
                 tempIcon.clearColorFilter()
             }
         }

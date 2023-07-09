@@ -1,13 +1,13 @@
 package com.katy.weatherforecastapp.ui
 
 import android.app.AlertDialog
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,17 +29,18 @@ class MainFragment : Fragment() {
 
     @Inject
     lateinit var networkUtils: NetworkUtils
+
     @Inject
     lateinit var alertDialogFactory: AlertDialogFactory
+
+    private val viewModel: MainViewModel by viewModels()
+
     companion object {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
     }
 
@@ -53,31 +54,30 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpObservers()
-        viewModel.startNetworkOrCacheFetches()
+        viewModel.currentDialog.postValue(MainViewDialog.ZipCodePrompt)
     }
 
     private fun setUpObservers() {
-        viewModel.location.observe(viewLifecycleOwner){
+        viewModel.location.observe(viewLifecycleOwner) {
             setUpView(it)
         }
-        viewModel.weatherDataList.observe(viewLifecycleOwner){
+        viewModel.weatherDataList.observe(viewLifecycleOwner) {
             setUpForecastRecycler(it)
         }
-        viewModel.currentDialog.observe(viewLifecycleOwner){ event ->
-            event?.let {
+        viewModel.currentDialog.observe(viewLifecycleOwner) { dialogType ->
+            dialogType?.let {
                 showDialog(it)
-                viewModel.currentDialog.postValue(null)
             }
 
         }
     }
 
     private fun showDialog(mainViewDialog: MainViewDialog) {
-        when(mainViewDialog){
+        when (mainViewDialog) {
             MainViewDialog.ZipCodePrompt -> promptForZipCode()
             else -> alertDialogFactory.createDialog(
                 AlertDialog.Builder(context),
-                mainViewDialog, object :OnOkCallback{
+                mainViewDialog, object : OnOkCallback {
                     override fun onOkPress() {
                         viewModel.currentDialog.postValue(null)
                     }
@@ -86,7 +86,12 @@ class MainFragment : Fragment() {
     }
 
     private fun promptForZipCode() {
-        activity?.supportFragmentManager?.let { ZipCodeDialogFragment(viewModel).show(it, "ZipCodeDialogFragment") }
+        activity?.supportFragmentManager?.let {
+            ZipCodeDialogFragment(viewModel).show(
+                it,
+                "ZipCodeDialogFragment"
+            )
+        }
     }
 
     private fun setUpView(location: Location) {
@@ -95,11 +100,11 @@ class MainFragment : Fragment() {
         val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
-            viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
             viewModel.editLocation()
         }
     }
-    private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>){
+
+    private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>) {
         val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
         forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
         forecastRecyclerView?.adapter = activity?.let { DayForecastAdapter(weatherDataList, it) }

@@ -1,12 +1,13 @@
 package com.katy.weatherforecastapp.repository
 
-import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.model.Location
-import javax.inject.Inject
+import com.katy.weatherforecastapp.model.local.LocationEntity
+import kotlinx.coroutines.flow.Flow
 
-interface LocationRepository{
+interface LocationRepository {
 
-    suspend fun addLocation(location: Location)
+    suspend fun cacheLocation(location: LocationEntity)
 
-    suspend fun getLocation(): Location?
+    suspend fun getLocationFlow(zipcode: String, errorCallbacks: DataErrorCallbacks): Flow<Location>
+
 }

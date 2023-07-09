@@ -1,7 +1,5 @@
 package com.katy.weatherforecastapp.adapter
 
-import android.app.Activity
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,16 +14,14 @@ import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.network.LinkFactory
 import com.katy.weatherforecastapp.ui.SingleDayForecastFragment
 import com.katy.weatherforecastapp.util.Utils
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ActivityComponent
 
-class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity): RecyclerView.Adapter<DayForecastAdapter.ViewHolder>(){
+class DayForecastAdapter(
+    private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity
+) : RecyclerView.Adapter<DayForecastAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.day_forecast_card, parent, false)
+        val view: View =
+            LayoutInflater.from(parent.context).inflate(R.layout.day_forecast_card, parent, false)
         return ViewHolder(view)
     }
 
@@ -39,16 +35,17 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
         setWeatherImage(holder.weatherImage, data.weather.icon)
         holder.dateText.text = Utils.formatDate(data.dtTxt, activity)
         holder.weatherText.text = data.weather.main
-        holder.tempText.text =  activity.getString(R.string.temp_format,data.main.temp.toInt())
+        holder.tempText.text = activity.getString(R.string.temp_format, data.main.temp.toInt())
         setTempIconColor(holder.tempIcon, data.main.temp)
-        holder.windText.text = activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
+        holder.windText.text =
+            activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
         holder.itemView.setOnClickListener { onClick(dataList[position]) }
     }
 
     private fun getMiddleOrFirstTime(day: List<WeatherData>): WeatherData {
-        return if(day.size == 8){
+        return if (day.size == 8) {
             day[4]
-        }else {
+        } else {
             day[0]
         }
     }
@@ -67,15 +64,20 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
         when {
             temp <= 32.0 -> {
                 tempIcon.contentDescription = activity.getString(R.string.blue_thermostat_icon)
-                tempIcon.setColorFilter(ContextCompat.getColor(activity, R.color.md_theme_light_primary))
+                tempIcon.setColorFilter(
+                    ContextCompat.getColor(
+                        activity, R.color.md_theme_light_primary
+                    )
+                )
             }
             temp >= 85.0 -> {
                 tempIcon.contentDescription = activity.getString(R.string.red_thermostat_icon)
-                val color = ContextCompat.getColor(activity,R.color.md_theme_light_error)
+                val color = ContextCompat.getColor(activity, R.color.md_theme_light_error)
                 tempIcon.setColorFilter(color)
             }
             else -> {
-                tempIcon.contentDescription = activity.getString(R.string.thermostat_icon_content_description)
+                tempIcon.contentDescription =
+                    activity.getString(R.string.thermostat_icon_content_description)
                 tempIcon.clearColorFilter()
             }
         }
@@ -90,7 +92,7 @@ class DayForecastAdapter(private val dataList: List<List<WeatherData>>, private 
         val windText: TextView = ItemView.findViewById(R.id.windText)
     }
 
-    fun onClick(dayData: List<WeatherData>){
+    fun onClick(dayData: List<WeatherData>) {
         val fragmentManager = activity.supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.container, SingleDayForecastFragment.newInstance(dayData))

@@ -1,8 +1,7 @@
 package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.model.FiveDayForecast
-import com.katy.weatherforecastapp.model.Location
-import kotlinx.coroutines.Deferred
+import com.katy.weatherforecastapp.model.remote.NetworkLocation
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -14,10 +13,11 @@ interface OpenWeatherApiService {
         @Query("lat") latitude: String,
         @Query("lon") longitude: String,
         @Query("appid") apiKey: String,
-        @Query("units") units: String): Response<FiveDayForecast>
+        @Query("units") units: String
+    ): Response<FiveDayForecast>
 
     @GET("/geo/1.0/zip")
     suspend fun getLatLon(
-        @Query("zip") zipCode: String,
-        @Query("appid") apiKey: String): Response<Location>
+        @Query("zip") zipCode: String, @Query("appid") apiKey: String
+    ): Response<NetworkLocation>
 }

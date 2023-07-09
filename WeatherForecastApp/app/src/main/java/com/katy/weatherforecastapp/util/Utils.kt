@@ -6,38 +6,38 @@ import com.katy.weatherforecastapp.model.WeatherData
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-object Utils{
+object Utils {
 
-     fun formatDate(date: LocalDateTime, context:Context): String {
+    fun formatDate(date: LocalDateTime, context: Context): String {
         val today = LocalDateTime.now()
-        return if( today.dayOfYear == date.dayOfYear){
+        return if (today.dayOfYear == date.dayOfYear) {
             context.getString(R.string.today)
         } else if (today.plusDays(1L).dayOfYear == date.dayOfYear) {
             context.getString(R.string.tomorrow)
-        }else if (today.minusDays(1L).dayOfYear == date.dayOfYear) {
+        } else if (today.minusDays(1L).dayOfYear == date.dayOfYear) {
             context.getString(R.string.yesterday)
         } else {
             date.dayOfWeek.name.capitalize()
         }
     }
 
-    fun formatTime(date: LocalDateTime):String{
+    fun formatTime(date: LocalDateTime): String {
         val formatter = DateTimeFormatter.ofPattern("h:mm a")
         return date.format(formatter)
     }
 
-    fun convertToLocalTime(date: LocalDateTime, shift: Int): LocalDateTime{
+    fun convertToLocalTime(date: LocalDateTime, shift: Int): LocalDateTime {
         return date.plusSeconds(shift.toLong())
     }
 
-    fun organizeWeatherDataByDay(weatherList:List<WeatherData>): List<List<WeatherData>>{
+    fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>> {
         val listOfDays = mutableListOf<List<WeatherData>>()
         var oneDayForecastList = mutableListOf<WeatherData>()
         var currentDay: Int? = null
         for (weatherData in weatherList) {
             val dataDay = weatherData.dtTxt.dayOfYear
-            if(dataDay != currentDay){
-                if(oneDayForecastList.isNotEmpty()){
+            if (dataDay != currentDay) {
+                if (oneDayForecastList.isNotEmpty()) {
                     listOfDays.add(oneDayForecastList)
                     oneDayForecastList = mutableListOf<WeatherData>()
                 }
@@ -49,7 +49,7 @@ object Utils{
         return listOfDays
     }
 
-    fun sortWeatherDataByTimeStamp(weatherList:List<WeatherData>) : List<WeatherData>{
+    fun sortWeatherDataByTimeStamp(weatherList: List<WeatherData>): List<WeatherData> {
         return weatherList.sortedBy { it.dtTxt }
     }
 }

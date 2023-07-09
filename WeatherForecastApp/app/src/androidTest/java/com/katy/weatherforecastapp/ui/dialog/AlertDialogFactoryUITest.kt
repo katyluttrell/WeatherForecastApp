@@ -7,12 +7,12 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.katy.weatherforecastapp.R
-import org.junit.Test
-import org.junit.runner.RunWith
 import com.katy.weatherforecastapp.MainActivity
+import com.katy.weatherforecastapp.R
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4::class)
@@ -23,7 +23,7 @@ class AlertDialogFactoryUITest {
 
     lateinit var alertDialogFactory: AlertDialogFactory
     var testBoolean = false
-    val callback = object :OnOkCallback{
+    val callback = object : OnOkCallback {
         override fun onOkPress() {
             testBoolean = true
         }
@@ -31,7 +31,7 @@ class AlertDialogFactoryUITest {
     lateinit var builder: AlertDialog.Builder
 
     @Before
-    fun setup(){
+    fun setup() {
         alertDialogFactory = AlertDialogFactory()
         testBoolean = false
         activity.onActivity {
@@ -48,15 +48,15 @@ class AlertDialogFactoryUITest {
             dialog?.show()
         }
         assert(dialog?.isShowing == true)
-            onView(withText(R.string.no_internet))
-                .check(matches(isDisplayed()))
-            onView(withText(R.string.old_data_message))
-                .check(matches(isDisplayed()))
-            onView(withText(R.string.ok))
-                .check(matches(isDisplayed()))
-                .perform(click())
-            assert(testBoolean)
-       assert(dialog?.isShowing == false)
+        onView(withText(R.string.no_internet))
+            .check(matches(isDisplayed()))
+        onView(withText(R.string.old_data_message))
+            .check(matches(isDisplayed()))
+        onView(withText(R.string.ok))
+            .check(matches(isDisplayed()))
+            .perform(click())
+        assert(testBoolean)
+        assert(dialog?.isShowing == false)
     }
 
     @Test
