@@ -16,7 +16,8 @@ const val DATABASE_VERSION = 2
 
 @Database(
     entities = [LocationEntity::class, WeatherData::class],
-    version = DATABASE_VERSION
+    version = DATABASE_VERSION,
+    exportSchema = true
 )
 @TypeConverters(DateAdapter::class)
 abstract class WeatherDatabase : RoomDatabase() {

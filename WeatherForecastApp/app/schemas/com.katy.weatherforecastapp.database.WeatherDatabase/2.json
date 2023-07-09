@@ -1,0 +1,126 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "44642d9d55aecdc8508ec7b987a95be0",
+    "entities": [
+      {
+        "tableName": "location",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zipcode` TEXT NOT NULL, `locationName` TEXT NOT NULL, `lat` TEXT NOT NULL, `lon` TEXT NOT NULL, PRIMARY KEY(`zipcode`))",
+        "fields": [
+          {
+            "fieldPath": "zipcode",
+            "columnName": "zipcode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "locationName",
+            "columnName": "locationName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lon",
+            "columnName": "lon",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "zipcode"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "weatherData",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dtTxt` TEXT NOT NULL, `temp` REAL NOT NULL, `tempMin` REAL NOT NULL, `tempMax` REAL NOT NULL, `humidity` TEXT NOT NULL, `main` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT NOT NULL, `speed` REAL NOT NULL, `gust` REAL NOT NULL, PRIMARY KEY(`dtTxt`))",
+        "fields": [
+          {
+            "fieldPath": "dtTxt",
+            "columnName": "dtTxt",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "main.temp",
+            "columnName": "temp",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "main.tempMin",
+            "columnName": "tempMin",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "main.tempMax",
+            "columnName": "tempMax",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "main.humidity",
+            "columnName": "humidity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weather.main",
+            "columnName": "main",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weather.description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weather.icon",
+            "columnName": "icon",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wind.speed",
+            "columnName": "speed",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "wind.gust",
+            "columnName": "gust",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "dtTxt"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '44642d9d55aecdc8508ec7b987a95be0')"
+    ]
+  }
+}
