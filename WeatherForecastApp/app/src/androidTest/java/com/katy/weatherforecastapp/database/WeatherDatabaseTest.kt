@@ -62,4 +62,20 @@ class WeatherDatabaseTest {
         runBlocking {retrievedLocation = locationDao.getLocation("80303").first()}
         assert(retrievedLocation == null)
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun testConflictStrategyReplace() {
+        locationDao.addLocation(location)
+        val conflictLocation = LocationEntity(
+            "80303",
+            "Boulder 2.0 with a new name",
+            "39.9914",
+            "-105.239"
+        )
+        locationDao.addLocation(conflictLocation)
+        var retrievedLocation: LocationEntity?
+        runBlocking {retrievedLocation = locationDao.getLocation("80303").first()}
+        assert(retrievedLocation == conflictLocation)
+    }
 }
