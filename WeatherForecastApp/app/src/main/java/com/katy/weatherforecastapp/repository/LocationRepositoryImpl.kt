@@ -49,7 +49,7 @@ class LocationRepositoryImpl @Inject constructor(
         withContext(ioDispatcher) {
             when (val result = openWeatherApi.getLocation(zipcode)) {
                 is NetworkResult.Success -> {
-                    cacheLocation((result as NetworkResult.Success.LocationSuccess).response as Location)
+                    cacheLocation(result.response as Location)
                     //TODO start weather request
                 }
                 is NetworkResult.BadRequest -> {

@@ -37,7 +37,7 @@ internal class OpenWeatherApiTest {
     fun testGetLocationHappyPath() = runTest {
         coEvery { mockApiService.getLatLon("80303", any()) } returns
                 Response.success(testObjectFactory.makeNetworkLocationObject())
-        val expectedResponse = NetworkResult.Success.LocationSuccess(testObjectFactory.makeLocationObject())
+        val expectedResponse = NetworkResult.Success(testObjectFactory.makeLocationObject())
         val response = openWeatherApi.getLocation("80303")
         assertEquals(expectedResponse, response)
     }
@@ -77,7 +77,7 @@ internal class OpenWeatherApiTest {
     fun testGetFiveDayForecastHappyPath() = runTest {
         coEvery { mockApiService.getFiveDayForecast(any(), any(), any(), any()) } returns
                 Response.success(testObjectFactory.makeNetwork5DayForecastUTC())
-        val expectedResponse = testObjectFactory.makeWeatherData5DayListInOrder()
+        val expectedResponse = NetworkResult.Success(testObjectFactory.makeWeatherData5DayListInOrder())
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
     }
@@ -85,7 +85,7 @@ internal class OpenWeatherApiTest {
     @Test
     fun testGetFiveDayForecastException() = runTest {
         coEvery { mockApiService.getFiveDayForecast(any(), any(), any(), any()) } throws Exception()
-        val expectedResponse = null
+        val expectedResponse = NetworkResult.NetworkError
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
     }
@@ -96,7 +96,7 @@ internal class OpenWeatherApiTest {
             ResponseBody.create("application/json".toMediaType(), errorContent)
         )
         coEvery { mockApiService.getFiveDayForecast(any(), any(), any(), any()) } returns mockResponse
-        val expectedResponse = null
+        val expectedResponse = NetworkResult.NetworkError
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
     }

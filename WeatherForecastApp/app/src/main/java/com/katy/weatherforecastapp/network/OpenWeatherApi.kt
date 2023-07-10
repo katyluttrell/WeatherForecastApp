@@ -16,7 +16,7 @@ class OpenWeatherApi @Inject constructor(
     suspend fun getFiveDayForecast(
         latitude: String,
         longitude: String,
-    ): List<List<WeatherData>>? {
+    ): NetworkResult<*> {
         return try {
             val response = withContext(ioDispatcher) {
                 apiService.getFiveDayForecast(
@@ -24,12 +24,12 @@ class OpenWeatherApi @Inject constructor(
                 )
             }
             if (response.isSuccessful) {
-                (response.body() as NetworkFiveDayForecast).asOrganizedWeatherDataList()
+                NetworkResult.Success((response.body() as NetworkFiveDayForecast).asOrganizedWeatherDataList())
             } else {
-                null
+                NetworkResult.NetworkError
             }
         } catch (e: Exception) {
-            null
+            NetworkResult.NetworkError
         }
     }
 
@@ -41,7 +41,7 @@ class OpenWeatherApi @Inject constructor(
                 )
             }
             if (response.isSuccessful && response.body() != null) {
-                NetworkResult.Success.LocationSuccess((response.body() as NetworkLocation).asExternalModel(zipCode))
+                NetworkResult.Success((response.body() as NetworkLocation).asExternalModel(zipCode))
             } else if (response.code() == 404) {
                 NetworkResult.BadRequest
             } else {

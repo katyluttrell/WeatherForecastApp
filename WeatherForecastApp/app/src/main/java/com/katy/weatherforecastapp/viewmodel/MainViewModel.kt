@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
+import com.katy.weatherforecastapp.network.NetworkResult
 import com.katy.weatherforecastapp.network.OpenWeatherApi
 import com.katy.weatherforecastapp.repository.DataErrorCallbacks
 import com.katy.weatherforecastapp.repository.LocationRepository
@@ -42,9 +43,14 @@ class MainViewModel @Inject constructor(
     private suspend fun fetchFiveDayForecast(location: Location): Boolean {
         return withContext(Dispatchers.IO) {
             val receivedWeather = openWeatherApi.getFiveDayForecast(location.lat, location.lon)
-            if (receivedWeather != null) {
-                weatherDataList.postValue(receivedWeather)
-                true
+            if (receivedWeather is NetworkResult.Success) {
+                val response = receivedWeather.response
+                if (response is List<*> && response.all { it is List<*> && it.all { it is WeatherData && response.isNotEmpty() } }){
+                    weatherDataList.postValue(receivedWeather.response as List<List<WeatherData>>)
+                    true
+                }else{
+                    false
+                }
             } else {
                 false
             }
