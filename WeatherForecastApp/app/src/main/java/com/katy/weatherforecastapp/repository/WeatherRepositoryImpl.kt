@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(private val weatherDataDao: WeatherDataDao) :
     WeatherRepository {
-    override suspend fun cacheFiveDayForecastList(forecast: List<List<WeatherData>>) {
-        forecast.flatten().forEach { weatherDataDao.addWeatherData(it.asEntity()) }
+    override suspend fun cacheFiveDayForecastList(forecast: List<List<WeatherData>>, zipcode: String) {
+        forecast.flatten().forEach { weatherDataDao.addWeatherData(it.asEntity(zipcode)) }
     }
 
     override suspend fun getFiveDayForecastList(): List<List<WeatherData>>? {

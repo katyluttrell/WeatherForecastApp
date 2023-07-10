@@ -40,8 +40,8 @@ data class Wind(
 fun Main.asEntity(): MainEntity = MainEntity(temp, tempMin, tempMax, humidity)
 fun Weather.asEntity(): WeatherEntity = WeatherEntity(main, description, icon)
 fun Wind.asEntity(): WindEntity = WindEntity(speed, gust)
-fun WeatherData.asEntity(): WeatherDataEntity =
-    WeatherDataEntity(dtTxt, main.asEntity(), weather.asEntity(), wind.asEntity())
+fun WeatherData.asEntity(zipcode: String): WeatherDataEntity =
+    WeatherDataEntity(zipcode, dtTxt, main.asEntity(), weather.asEntity(), wind.asEntity())
 
 //Data must already be in order by time stamp. This simply arranges into days.
 fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>> {

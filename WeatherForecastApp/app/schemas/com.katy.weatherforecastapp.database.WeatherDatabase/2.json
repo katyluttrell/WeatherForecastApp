@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "44642d9d55aecdc8508ec7b987a95be0",
+    "identityHash": "f0c71aa66b29f527a8a91299ddae0411",
     "entities": [
       {
         "tableName": "location",
@@ -44,8 +44,14 @@
       },
       {
         "tableName": "weatherData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`dtTxt` TEXT NOT NULL, `temp` REAL NOT NULL, `tempMin` REAL NOT NULL, `tempMax` REAL NOT NULL, `humidity` TEXT NOT NULL, `main` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT NOT NULL, `speed` REAL NOT NULL, `gust` REAL NOT NULL, PRIMARY KEY(`dtTxt`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`zipcode` TEXT NOT NULL, `dtTxt` TEXT NOT NULL, `temp` REAL NOT NULL, `tempMin` REAL NOT NULL, `tempMax` REAL NOT NULL, `humidity` TEXT NOT NULL, `main` TEXT NOT NULL, `description` TEXT NOT NULL, `icon` TEXT NOT NULL, `speed` REAL NOT NULL, `gust` REAL NOT NULL, PRIMARY KEY(`zipcode`, `dtTxt`))",
         "fields": [
+          {
+            "fieldPath": "zipcode",
+            "columnName": "zipcode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
           {
             "fieldPath": "dtTxt",
             "columnName": "dtTxt",
@@ -110,6 +116,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
+            "zipcode",
             "dtTxt"
           ]
         },
@@ -120,7 +127,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '44642d9d55aecdc8508ec7b987a95be0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f0c71aa66b29f527a8a91299ddae0411')"
     ]
   }
 }

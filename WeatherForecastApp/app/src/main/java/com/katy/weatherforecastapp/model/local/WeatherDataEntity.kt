@@ -8,10 +8,10 @@ import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 
 
-@Entity(tableName = "weatherData")
+@Entity(tableName = "weatherData", primaryKeys = ["zipcode", "dtTxt"])
 @Parcelize
 data class WeatherDataEntity(
-    @PrimaryKey
+    val zipcode: String,
     @TypeConverters(DateAdapter::class) val dtTxt: LocalDateTime,
     @Embedded val main: MainEntity,
     @Embedded val weather: WeatherEntity,
