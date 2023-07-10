@@ -37,7 +37,7 @@ internal class OpenWeatherApiTest {
     fun testGetLocationHappyPath() = runTest {
         coEvery { mockApiService.getLatLon("80303", any()) } returns
                 Response.success(testObjectFactory.makeNetworkLocationObject())
-        val expectedResponse = NetworkResult.Success(testObjectFactory.makeLocationObject())
+        val expectedResponse = NetworkResult.Success.LocationSuccess(testObjectFactory.makeLocationObject())
         val response = openWeatherApi.getLocation("80303")
         assertEquals(expectedResponse, response)
     }

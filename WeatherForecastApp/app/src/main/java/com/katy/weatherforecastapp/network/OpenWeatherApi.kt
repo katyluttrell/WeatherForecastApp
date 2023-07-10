@@ -41,7 +41,7 @@ class OpenWeatherApi @Inject constructor(
                 )
             }
             if (response.isSuccessful && response.body() != null) {
-                NetworkResult.Success((response.body() as NetworkLocation).asExternalModel(zipCode))
+                NetworkResult.Success.LocationSuccess((response.body() as NetworkLocation).asExternalModel(zipCode))
             } else if (response.code() == 404) {
                 NetworkResult.BadRequest
             } else {
@@ -51,7 +51,4 @@ class OpenWeatherApi @Inject constructor(
             NetworkResult.NetworkError
         }
     }
-
-
-
 }
