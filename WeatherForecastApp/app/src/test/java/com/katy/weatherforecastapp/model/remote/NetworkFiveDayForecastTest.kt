@@ -48,11 +48,10 @@ internal class NetworkFiveDayForecastTest {
     }
 
     @Test
-    fun testNetwork5DayForecastAsExternalModel() {
-        val originalData = testObjectFactory.makeWeatherDataEntityListOutOfOrder()
-            testObjectFactory.makeNetwork5DayForecastUTC().asOrganizedWeatherDataList()
+    fun testNetwork5DayForecastsOrganizedWeatherDataList() {
+        val originalData = testObjectFactory.makeNetwork5DayForecastUTC()
         val expectedData = testObjectFactory.makeWeatherData5DayListInOrder()
-        assertEquals(expectedData, originalData)
+        assertEquals(expectedData, originalData.asOrganizedWeatherDataList())
     }
 
 }
