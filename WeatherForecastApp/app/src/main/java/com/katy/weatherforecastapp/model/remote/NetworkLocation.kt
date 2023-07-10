@@ -1,6 +1,6 @@
 package com.katy.weatherforecastapp.model.remote
 
-import com.katy.weatherforecastapp.model.local.LocationEntity
+import com.katy.weatherforecastapp.model.Location
 import com.squareup.moshi.Json
 
 data class NetworkLocation(
@@ -9,6 +9,6 @@ data class NetworkLocation(
     @field:Json(name = "lon") val lon: String
 )
 
-fun NetworkLocation.asEntity(zipcode: String) = LocationEntity(
+fun NetworkLocation.asExternalModel(zipcode: String) = Location(
     zipcode, locationName, lat, lon
 )

@@ -26,32 +26,6 @@ object Utils {
         return date.format(formatter)
     }
 
-    fun convertToLocalTime(date: LocalDateTime, shift: Int): LocalDateTime {
-        return date.plusSeconds(shift.toLong())
-    }
-
-    fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>> {
-        val listOfDays = mutableListOf<List<WeatherData>>()
-        var oneDayForecastList = mutableListOf<WeatherData>()
-        var currentDay: Int? = null
-        for (weatherData in weatherList) {
-            val dataDay = weatherData.dtTxt.dayOfYear
-            if (dataDay != currentDay) {
-                if (oneDayForecastList.isNotEmpty()) {
-                    listOfDays.add(oneDayForecastList)
-                    oneDayForecastList = mutableListOf<WeatherData>()
-                }
-                currentDay = dataDay
-            }
-            oneDayForecastList.add(weatherData)
-        }
-        listOfDays.add(oneDayForecastList)
-        return listOfDays
-    }
-
-    fun sortWeatherDataByTimeStamp(weatherList: List<WeatherData>): List<WeatherData> {
-        return weatherList.sortedBy { it.dtTxt }
-    }
 }
 
 fun String.capitalize(): String = this.lowercase().replaceFirstChar { it.titlecase() }

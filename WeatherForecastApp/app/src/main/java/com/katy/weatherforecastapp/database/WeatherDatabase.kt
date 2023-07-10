@@ -9,13 +9,13 @@ import com.katy.weatherforecastapp.adapter.DateAdapter
 import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.database.dao.WeatherDataDao
 import com.katy.weatherforecastapp.database.migrations.migration_1_2
-import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.model.local.LocationEntity
+import com.katy.weatherforecastapp.model.local.WeatherDataEntity
 
 const val DATABASE_VERSION = 2
 
 @Database(
-    entities = [LocationEntity::class, WeatherData::class],
+    entities = [LocationEntity::class, WeatherDataEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true
 )

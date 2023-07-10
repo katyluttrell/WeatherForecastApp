@@ -2,11 +2,8 @@ package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.BuildConfig
 import com.katy.weatherforecastapp.di.IoDispatcher
-import com.katy.weatherforecastapp.model.FiveDayForecast
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.model.remote.NetworkLocation
-import com.katy.weatherforecastapp.model.remote.asEntity
-import com.katy.weatherforecastapp.util.Utils
+import com.katy.weatherforecastapp.model.remote.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,7 +24,7 @@ class OpenWeatherApi @Inject constructor(
                 )
             }
             if (response.isSuccessful) {
-                response.body()?.let { Utils.organizeWeatherDataByDay(resolveTimeZone(it)) }
+                (response.body() as NetworkFiveDayForecast).asOrganizedWeatherDataList()
             } else {
                 null
             }
@@ -36,7 +33,7 @@ class OpenWeatherApi @Inject constructor(
         }
     }
 
-    suspend fun getLatLong(zipCode: String): NetworkResult<*> {
+    suspend fun getLocation(zipCode: String): NetworkResult<*> {
         return try {
             val response = withContext(ioDispatcher) {
                 apiService.getLatLon(
@@ -44,7 +41,7 @@ class OpenWeatherApi @Inject constructor(
                 )
             }
             if (response.isSuccessful && response.body() != null) {
-                NetworkResult.Success((response.body() as NetworkLocation).asEntity(zipCode))
+                NetworkResult.Success((response.body() as NetworkLocation).asExternalModel(zipCode))
             } else if (response.code() == 404) {
                 NetworkResult.BadRequest
             } else {
@@ -55,11 +52,6 @@ class OpenWeatherApi @Inject constructor(
         }
     }
 
-    private fun resolveTimeZone(fiveDayForecast: FiveDayForecast): List<WeatherData> {
-        val offset = fiveDayForecast.city.timezone
-        val list = fiveDayForecast.list
-        list.forEach { it.dtTxt = Utils.convertToLocalTime(it.dtTxt, offset) }
-        return list
-    }
+
 
 }

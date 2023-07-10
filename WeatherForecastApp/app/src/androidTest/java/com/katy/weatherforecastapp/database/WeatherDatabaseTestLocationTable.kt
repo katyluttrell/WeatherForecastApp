@@ -27,12 +27,14 @@ class WeatherDatabaseTestLocationTable {
     )
 
     @Before
-    fun setup(){
+    fun setup() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         database = Room.inMemoryDatabaseBuilder(
-            context, WeatherDatabase::class.java).build()
-        locationDao= database.locationDao()
+            context, WeatherDatabase::class.java
+        ).build()
+        locationDao = database.locationDao()
     }
+
     @After
     @Throws(IOException::class)
     fun teardown() {
@@ -44,22 +46,24 @@ class WeatherDatabaseTestLocationTable {
     fun testReadWriteDataLocation() {
         locationDao.addLocation(location)
         var retrievedLocation: LocationEntity?
-        runBlocking {retrievedLocation = locationDao.getLocation("80303").first()}
+        runBlocking { retrievedLocation = locationDao.getLocation("80303").first() }
         assert(retrievedLocation == location)
     }
+
     @Test
     @Throws(Exception::class)
     fun testReadDataLocationNotInTable() {
         locationDao.addLocation(location)
         var retrievedLocation: LocationEntity?
-        runBlocking {retrievedLocation = locationDao.getLocation("80301").first()}
+        runBlocking { retrievedLocation = locationDao.getLocation("80301").first() }
         assert(retrievedLocation == null)
     }
+
     @Test
     @Throws(Exception::class)
     fun testReadDataEmptyTable() {
         var retrievedLocation: LocationEntity?
-        runBlocking {retrievedLocation = locationDao.getLocation("80303").first()}
+        runBlocking { retrievedLocation = locationDao.getLocation("80303").first() }
         assert(retrievedLocation == null)
     }
 
@@ -75,7 +79,8 @@ class WeatherDatabaseTestLocationTable {
         )
         locationDao.addLocation(conflictLocation)
         var retrievedLocation: LocationEntity?
-        runBlocking {retrievedLocation = locationDao.getLocation("80303").first()}
+        runBlocking { retrievedLocation = locationDao.getLocation("80303").first() }
         assert(retrievedLocation == conflictLocation)
     }
+
 }

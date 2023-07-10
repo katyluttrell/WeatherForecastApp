@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocationRepository {
 
-    suspend fun cacheLocation(location: LocationEntity)
+    suspend fun cacheLocation(location: Location)
 
     suspend fun getLocationFlow(zipcode: String, errorCallbacks: DataErrorCallbacks): Flow<Location>
 

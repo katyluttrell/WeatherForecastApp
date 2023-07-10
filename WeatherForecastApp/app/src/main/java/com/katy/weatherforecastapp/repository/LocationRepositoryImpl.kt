@@ -4,7 +4,7 @@ import android.content.Context
 import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.Location
-import com.katy.weatherforecastapp.model.local.LocationEntity
+import com.katy.weatherforecastapp.model.asEntity
 import com.katy.weatherforecastapp.model.local.asExternalModel
 import com.katy.weatherforecastapp.network.NetworkResult
 import com.katy.weatherforecastapp.network.NetworkUtils
@@ -27,7 +27,7 @@ class LocationRepositoryImpl @Inject constructor(
 ) : LocationRepository {
 
 
-    override suspend fun cacheLocation(location: LocationEntity) = locationDao.addLocation(location)
+    override suspend fun cacheLocation(location: Location) = locationDao.addLocation(location.asEntity())
 
     override suspend fun getLocationFlow(
         zipcode: String,
@@ -47,9 +47,9 @@ class LocationRepositoryImpl @Inject constructor(
 
     private suspend fun fetchLocation(zipcode: String, errorCallbacks: DataErrorCallbacks) {
         withContext(ioDispatcher) {
-            when (val result = openWeatherApi.getLatLong(zipcode)) {
+            when (val result = openWeatherApi.getLocation(zipcode)) {
                 is NetworkResult.Success -> {
-                    cacheLocation(result.response as LocationEntity)
+                    cacheLocation(result.response as Location)
                     //TODO start weather request
                 }
                 is NetworkResult.BadRequest -> {
