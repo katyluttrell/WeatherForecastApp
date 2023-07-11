@@ -1,6 +1,7 @@
 package com.katy.weatherforecastapp.repository
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import com.katy.weatherforecastapp.database.dao.LocationDao
 import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.Location
@@ -26,8 +27,8 @@ class LocationRepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : LocationRepository {
 
-
-    private suspend fun cacheLocation(location: Location) = withContext(ioDispatcher){
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal suspend fun cacheLocation(location: Location) = withContext(ioDispatcher){
         locationDao.addLocation(location.asEntity())
     }
 
@@ -47,12 +48,12 @@ class LocationRepositoryImpl @Inject constructor(
         return flow.map { it?.asExternalModel() }.filterNotNull()
     }
 
-    private suspend fun fetchLocation(zipcode: String, errorCallbacks: LocationDataErrorCallbacks) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal suspend fun fetchLocation(zipcode: String, errorCallbacks: LocationDataErrorCallbacks) {
         withContext(ioDispatcher) {
             when (val result = openWeatherApi.getLocation(zipcode)) {
                 is NetworkResult.Success -> {
                     cacheLocation(result.response as Location)
-                    //TODO start weather request
                 }
                 is NetworkResult.BadRequest -> {
                     errorCallbacks.onInvalidZipcode()
