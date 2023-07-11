@@ -27,7 +27,7 @@ internal class WeatherDataTest{
     }
     @Test
     fun testWeatherDataAsEntity(){
-        assertEquals(testObjectFactory.makeWeatherDataEntity(), testObjectFactory.makeWeatherData().asEntity())
+        assertEquals(testObjectFactory.makeWeatherDataEntity(), testObjectFactory.makeWeatherData().asEntity("80303"))
     }
 
     @Test
@@ -35,5 +35,11 @@ internal class WeatherDataTest{
         val inOrderList = testObjectFactory.makeWeatherData5DayListInOrder()
         val outOfOrderList = testObjectFactory.makeWeatherDataListOrganizedByTimestamp()
         assertEquals(inOrderList, organizeWeatherDataByDay(outOfOrderList))
+    }
+
+    @Test
+    fun testOrganizeWeatherDataByDayEmptyList(){
+        val emptyList = listOf<WeatherData>()
+        assertEquals(null, organizeWeatherDataByDay(emptyList))
     }
 }

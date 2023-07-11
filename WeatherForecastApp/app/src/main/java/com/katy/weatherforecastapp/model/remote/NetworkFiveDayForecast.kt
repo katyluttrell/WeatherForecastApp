@@ -50,7 +50,7 @@ fun NetworkMain.asExternalModel(): Main = Main(temp, tempMin, tempMax, humidity 
 fun NetworkWeather.asExternalModel(): Weather = Weather(main, description, icon)
 fun NetworkWind.asExternalModel(): Wind = Wind(speed, gust)
 
-fun NetworkFiveDayForecast.asOrganizedWeatherDataList(): List<List<WeatherData>>{
+fun NetworkFiveDayForecast.asOrganizedWeatherDataList(): List<List<WeatherData>>?{
     val timezoneResolvedList = resolveTimeZone(list, city.timezone)
     return organizeWeatherDataByDay(timezoneResolvedList)
 }

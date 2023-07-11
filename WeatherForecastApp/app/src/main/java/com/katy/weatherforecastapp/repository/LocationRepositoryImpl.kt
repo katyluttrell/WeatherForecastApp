@@ -27,12 +27,14 @@ class LocationRepositoryImpl @Inject constructor(
 ) : LocationRepository {
 
 
-    override suspend fun cacheLocation(location: Location) = locationDao.addLocation(location.asEntity())
+    private suspend fun cacheLocation(location: Location) = withContext(ioDispatcher){
+        locationDao.addLocation(location.asEntity())
+    }
 
     override suspend fun getLocationFlow(
         zipcode: String,
-        errorCallbacks: DataErrorCallbacks
-    ): Flow<Location> {
+        errorCallbacks: LocationDataErrorCallbacks
+    ): Flow<Location?> {
         val flow = locationDao.getLocation(zipcode)
         val location = flow.first()
         if (location == null) {
@@ -45,7 +47,7 @@ class LocationRepositoryImpl @Inject constructor(
         return flow.map { it?.asExternalModel() }.filterNotNull()
     }
 
-    private suspend fun fetchLocation(zipcode: String, errorCallbacks: DataErrorCallbacks) {
+    private suspend fun fetchLocation(zipcode: String, errorCallbacks: LocationDataErrorCallbacks) {
         withContext(ioDispatcher) {
             when (val result = openWeatherApi.getLocation(zipcode)) {
                 is NetworkResult.Success -> {

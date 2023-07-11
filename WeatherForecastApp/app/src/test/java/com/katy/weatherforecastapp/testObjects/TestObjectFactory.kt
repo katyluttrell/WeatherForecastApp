@@ -8,20 +8,26 @@ import java.time.Month
 
 class TestObjectFactory {
 
+    fun makeZipcode(version: Int = 1):String{
+        return when(version) {
+            else -> "80303"
+        }
+    }
    fun  makeLocationObject(version: Int = 1): Location {
        return when(version) {
            else -> Location(
-               "80303",
+               makeZipcode(version),
                "Boulder",
                "39.9914",
                "-105.239"
            )
        }
    }
+
     fun makeLocationEntityObject(version: Int = 1): LocationEntity {
         return when(version) {
             else -> LocationEntity(
-                "80303",
+                makeZipcode(version),
                 "Boulder",
                 "39.9914",
                 "-105.239"
@@ -182,12 +188,14 @@ class TestObjectFactory {
     }
 
     fun makeWeatherDataEntity(
+        zipcodeVersion: Int = 1,
         dateVersion: Int = 1,
         mainVersion: Int = 1,
         weatherVersion: Int = 1,
         windVersion: Int = 1,
     ): WeatherDataEntity =
         WeatherDataEntity(
+            makeZipcode(zipcodeVersion),
             makeDateTime(dateVersion),
             makeMainEntity(mainVersion),
             makeWeatherEntity(weatherVersion),
@@ -285,7 +293,7 @@ class TestObjectFactory {
         val order = listOf(21, 9, 14, 30, 6, 3, 12, 18, 1, 29, 24, 7, 15, 25, 27, 2, 11, 8, 17, 10, 5, 19, 23, 13, 22, 4, 28, 20, 16, 26)
         val finalList = mutableListOf<WeatherDataEntity>()
         for(i in order){
-            finalList.add(makeWeatherDataEntity(i))
+            finalList.add(makeWeatherDataEntity(dateVersion = i))
         }
         return finalList
     }

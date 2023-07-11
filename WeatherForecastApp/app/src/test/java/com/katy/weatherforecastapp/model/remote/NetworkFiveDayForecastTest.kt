@@ -54,4 +54,14 @@ internal class NetworkFiveDayForecastTest {
         assertEquals(expectedData, originalData.asOrganizedWeatherDataList())
     }
 
+    @Test
+    fun testNetwork5DayForecastsOrganizedWeatherDataListEmptyList() {
+        val originalData = NetworkFiveDayForecast(
+            listOf<NetworkWeatherData>(),
+            NetworkCity(0)
+        )
+        val expectedData = null
+        assertEquals(expectedData, originalData.asOrganizedWeatherDataList())
+    }
+
 }

@@ -8,6 +8,7 @@ import com.katy.weatherforecastapp.database.dao.WeatherDataDao
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.model.asEntity
 import com.katy.weatherforecastapp.model.local.asExternalModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.*
@@ -43,7 +44,7 @@ class WeatherDatabaseTestWeatherDataTable {
         val weatherData = WeatherDataFactory().makeWeatherData()
         weatherDataDao.addWeatherData(weatherData.asEntity("80303"))
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().map { it.asExternalModel() } }
+        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
         assertEquals(weatherData, retrievedData[0])
     }
 
@@ -51,7 +52,7 @@ class WeatherDatabaseTestWeatherDataTable {
     @Throws(Exception::class)
     fun testReadDataEmptyTable() {
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().map { it.asExternalModel() } }
+        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
         assertEquals(emptyList<WeatherData>(), retrievedData)
     }
 
@@ -65,7 +66,7 @@ class WeatherDatabaseTestWeatherDataTable {
         weatherDataDao.addWeatherData(data.asEntity("80303"))
         weatherDataDao.addWeatherData(conflictData.asEntity("80303"))
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().map { it.asExternalModel() } }
+        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
         assertEquals(1, retrievedData.size)
         assertEquals(conflictData, retrievedData[0])
     }
@@ -76,7 +77,7 @@ class WeatherDatabaseTestWeatherDataTable {
         weatherDataDao.addWeatherData(WeatherDataFactory().makeWeatherData().asEntity("80303"))
         runBlocking { weatherDataDao.deleteAll() }
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().map { it.asExternalModel() } }
+        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
         assertEquals(emptyList<WeatherData>(), retrievedData)
     }
 }
