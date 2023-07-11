@@ -1,6 +1,8 @@
 package com.katy.weatherforecastapp.repository
 
 import android.content.Context
+import android.util.Log
+import androidx.annotation.VisibleForTesting
 import com.katy.weatherforecastapp.database.dao.WeatherDataDao
 import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.Location
@@ -15,6 +17,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -23,13 +26,15 @@ import javax.inject.Inject
 
 class WeatherRepositoryImpl @Inject constructor(
     private val weatherDataDao: WeatherDataDao,
-    private val networkUtils: NetworkUtils,
     private val openWeatherApi: OpenWeatherApi,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
-    @ApplicationContext private val context: Context
+    private val networkUtils: NetworkUtils,
+    @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) :
     WeatherRepository {
-    private suspend fun cacheFiveDayForecastList(
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal suspend fun cacheFiveDayForecastList(
         forecast: List<List<WeatherData>>,
         zipcode: String
     ) =
@@ -51,9 +56,11 @@ class WeatherRepositoryImpl @Inject constructor(
             }
         }
         return flow.map { organizeWeatherDataByDay(sortWeatherDataEntitiesByTimeStamp(it)) }
+            .filterNotNull()
     }
 
-    private suspend fun fetchFiveDayForecast(
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal suspend fun fetchFiveDayForecast(
         location: Location,
         callbacks: WeatherDataErrorCallbacks
     ) {
@@ -61,11 +68,20 @@ class WeatherRepositoryImpl @Inject constructor(
             val receivedWeather = openWeatherApi.getFiveDayForecast(location.lat, location.lon)
             if (receivedWeather is NetworkResult.Success) {
                 val response = receivedWeather.response
-                if (response is List<*> && response.all { it is List<*> && it.all { it is WeatherData && response.isNotEmpty() } }) {
-                    cacheFiveDayForecastList(
-                        receivedWeather.response as List<List<WeatherData>>,
-                        location.zipcode
-                    )
+                if (response is List<*>
+                    && response.isNotEmpty()
+                    && response.all { it is List<*> && it.isNotEmpty() && it.all { data -> data is WeatherData } }
+                ) {
+                    try {
+                        val data = receivedWeather.response as List<List<WeatherData>>
+                        cacheFiveDayForecastList(
+                            data,
+                            location.zipcode
+                        )
+                    } catch (e: Exception) {
+                        Log.e("WeatherRepositoryImpl", e.localizedMessage as String)
+                        callbacks.onNetworkError()
+                    }
                 } else {
                     callbacks.onNetworkError()
                 }

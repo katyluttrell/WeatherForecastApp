@@ -325,4 +325,19 @@ class TestObjectFactory {
         }
         return finalList
     }
+
+    fun makeWeatherDataEntity5DayListInOrder(): List<List<WeatherDataEntity>>{
+        val finalList = mutableListOf<List<WeatherDataEntity>>()
+        val day1 = listOf(makeWeatherDataEntity(1), makeWeatherDataEntity(2))
+        finalList.add(day1)
+        var day = mutableListOf<WeatherDataEntity>()
+        for( i in 3..30){
+            day.add(makeWeatherDataEntity(i))
+            if((i-2)%7 == 0){
+                finalList.add(day)
+                day = mutableListOf()
+            }
+        }
+        return finalList
+    }
 }
