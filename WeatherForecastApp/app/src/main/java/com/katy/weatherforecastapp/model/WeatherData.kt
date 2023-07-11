@@ -44,21 +44,25 @@ fun WeatherData.asEntity(zipcode: String): WeatherDataEntity =
     WeatherDataEntity(zipcode, dtTxt, main.asEntity(), weather.asEntity(), wind.asEntity())
 
 //Data must already be in order by time stamp. This simply arranges into days.
-fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>> {
-    val listOfDays = mutableListOf<List<WeatherData>>()
-    var oneDayForecastList = mutableListOf<WeatherData>()
-    var currentDay: Int = weatherList[0].dtTxt.dayOfYear
-    for (weatherData in weatherList) {
-        val dataDay = weatherData.dtTxt.dayOfYear
-        if (dataDay != currentDay) {
-            if (oneDayForecastList.isNotEmpty()) {
-                listOfDays.add(oneDayForecastList)
-                oneDayForecastList = mutableListOf<WeatherData>()
+fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>>? {
+    return if(weatherList.isEmpty()){
+         null
+    }else {
+        val listOfDays = mutableListOf<List<WeatherData>>()
+        var oneDayForecastList = mutableListOf<WeatherData>()
+        var currentDay: Int = weatherList[0].dtTxt.dayOfYear
+        for (weatherData in weatherList) {
+            val dataDay = weatherData.dtTxt.dayOfYear
+            if (dataDay != currentDay) {
+                if (oneDayForecastList.isNotEmpty()) {
+                    listOfDays.add(oneDayForecastList)
+                    oneDayForecastList = mutableListOf<WeatherData>()
+                }
+                currentDay = dataDay
             }
-            currentDay = dataDay
+            oneDayForecastList.add(weatherData)
         }
-        oneDayForecastList.add(weatherData)
+        listOfDays.add(oneDayForecastList)
+        listOfDays
     }
-    listOfDays.add(oneDayForecastList)
-    return listOfDays
 }
