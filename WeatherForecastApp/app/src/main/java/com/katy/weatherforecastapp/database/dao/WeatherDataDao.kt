@@ -1,7 +1,6 @@
 package com.katy.weatherforecastapp.database.dao
 
 import androidx.room.*
-import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.model.local.WeatherDataEntity
 import kotlinx.coroutines.flow.Flow
 

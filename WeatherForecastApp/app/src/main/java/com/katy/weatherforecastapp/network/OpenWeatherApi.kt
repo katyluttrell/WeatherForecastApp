@@ -2,8 +2,10 @@ package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.BuildConfig
 import com.katy.weatherforecastapp.di.IoDispatcher
-import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.model.remote.*
+import com.katy.weatherforecastapp.model.remote.NetworkFiveDayForecast
+import com.katy.weatherforecastapp.model.remote.NetworkLocation
+import com.katy.weatherforecastapp.model.remote.asExternalModel
+import com.katy.weatherforecastapp.model.remote.asOrganizedWeatherDataList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -12,7 +14,6 @@ class OpenWeatherApi @Inject constructor(
     private val apiService: OpenWeatherApiService,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) {
-
     suspend fun getFiveDayForecast(
         latitude: String,
         longitude: String,

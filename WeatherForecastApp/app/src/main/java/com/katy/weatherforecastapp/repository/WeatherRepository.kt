@@ -9,6 +9,5 @@ interface WeatherRepository {
         location: Location,
         errorCallbacks: WeatherDataErrorCallbacks
     ): Flow<List<List<WeatherData>>>
-
     suspend fun deleteAllWeatherData()
 }

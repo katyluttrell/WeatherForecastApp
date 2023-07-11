@@ -28,7 +28,7 @@ class LocationRepositoryImpl @Inject constructor(
 ) : LocationRepository {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal suspend fun cacheLocation(location: Location) = withContext(ioDispatcher){
+    internal suspend fun cacheLocation(location: Location) = withContext(ioDispatcher) {
         locationDao.addLocation(location.asEntity())
     }
 
@@ -49,7 +49,10 @@ class LocationRepositoryImpl @Inject constructor(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    internal suspend fun fetchLocation(zipcode: String, errorCallbacks: LocationDataErrorCallbacks) {
+    internal suspend fun fetchLocation(
+        zipcode: String,
+        errorCallbacks: LocationDataErrorCallbacks
+    ) {
         withContext(ioDispatcher) {
             when (val result = openWeatherApi.getLocation(zipcode)) {
                 is NetworkResult.Success -> {

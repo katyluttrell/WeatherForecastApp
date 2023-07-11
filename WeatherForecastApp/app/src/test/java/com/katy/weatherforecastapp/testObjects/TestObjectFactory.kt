@@ -8,24 +8,25 @@ import java.time.Month
 
 class TestObjectFactory {
 
-    fun makeZipcode(version: Int = 1):String{
-        return when(version) {
+    fun makeZipcode(version: Int = 1): String {
+        return when (version) {
             else -> "80303"
         }
     }
-   fun  makeLocationObject(version: Int = 1): Location {
-       return when(version) {
-           else -> Location(
-               makeZipcode(version),
-               "Boulder",
-               "39.9914",
-               "-105.239"
-           )
-       }
-   }
+
+    fun makeLocationObject(version: Int = 1): Location {
+        return when (version) {
+            else -> Location(
+                makeZipcode(version),
+                "Boulder",
+                "39.9914",
+                "-105.239"
+            )
+        }
+    }
 
     fun makeLocationEntityObject(version: Int = 1): LocationEntity {
-        return when(version) {
+        return when (version) {
             else -> LocationEntity(
                 makeZipcode(version),
                 "Boulder",
@@ -34,8 +35,9 @@ class TestObjectFactory {
             )
         }
     }
+
     fun makeNetworkLocationObject(version: Int = 1): NetworkLocation {
-        return when(version) {
+        return when (version) {
             else -> NetworkLocation(
                 "Boulder",
                 "39.9914",
@@ -246,16 +248,17 @@ class TestObjectFactory {
             )
         }
     }
-    fun makeNetworkCity(version: Int = 1): NetworkCity{
-        return when(version){
+
+    fun makeNetworkCity(version: Int = 1): NetworkCity {
+        return when (version) {
             else -> NetworkCity(
                 -21600
             )
         }
     }
 
-    fun makeNetwork5DayForecastUTC(version: Int = 1):NetworkFiveDayForecast {
-       return when(version){
+    fun makeNetwork5DayForecastUTC(version: Int = 1): NetworkFiveDayForecast {
+        return when (version) {
             else -> NetworkFiveDayForecast(
                 makeNetworkWeatherDataListOrganizedByTimestampUTC(),
                 makeNetworkCity()
@@ -275,6 +278,7 @@ class TestObjectFactory {
             makeNetworkWeather(weatherVersion),
             makeNetworkWind(windVersion)
         )
+
     fun makeNetworkWeatherDataUTC(
         dateVersion: Int = 1,
         mainVersion: Int = 1,
@@ -289,36 +293,70 @@ class TestObjectFactory {
         )
 
 
-    fun makeWeatherDataEntityListOutOfOrder(): List<WeatherDataEntity>{
-        val order = listOf(21, 9, 14, 30, 6, 3, 12, 18, 1, 29, 24, 7, 15, 25, 27, 2, 11, 8, 17, 10, 5, 19, 23, 13, 22, 4, 28, 20, 16, 26)
+    fun makeWeatherDataEntityListOutOfOrder(): List<WeatherDataEntity> {
+        val order = listOf(
+            21,
+            9,
+            14,
+            30,
+            6,
+            3,
+            12,
+            18,
+            1,
+            29,
+            24,
+            7,
+            15,
+            25,
+            27,
+            2,
+            11,
+            8,
+            17,
+            10,
+            5,
+            19,
+            23,
+            13,
+            22,
+            4,
+            28,
+            20,
+            16,
+            26
+        )
         val finalList = mutableListOf<WeatherDataEntity>()
-        for(i in order){
+        for (i in order) {
             finalList.add(makeWeatherDataEntity(dateVersion = i))
         }
         return finalList
     }
-    fun makeNetworkWeatherDataListOrganizedByTimestampUTC(): List<NetworkWeatherData>{
+
+    fun makeNetworkWeatherDataListOrganizedByTimestampUTC(): List<NetworkWeatherData> {
         val finalList = mutableListOf<NetworkWeatherData>()
-        for(i in 1..30){
+        for (i in 1..30) {
             finalList.add(makeNetworkWeatherDataUTC(i))
         }
         return finalList
     }
-    fun makeWeatherDataListOrganizedByTimestamp(): List<WeatherData>{
+
+    fun makeWeatherDataListOrganizedByTimestamp(): List<WeatherData> {
         val finalList = mutableListOf<WeatherData>()
-        for(i in 1..30){
+        for (i in 1..30) {
             finalList.add(makeWeatherData(i))
         }
         return finalList
     }
-    fun makeWeatherData5DayListInOrder(): List<List<WeatherData>>{
+
+    fun makeWeatherData5DayListInOrder(): List<List<WeatherData>> {
         val finalList = mutableListOf<List<WeatherData>>()
         val day1 = listOf(makeWeatherData(1), makeWeatherData(2))
         finalList.add(day1)
         var day = mutableListOf<WeatherData>()
-        for( i in 3..30){
+        for (i in 3..30) {
             day.add(makeWeatherData(i))
-            if((i-2)%7 == 0){
+            if ((i - 2) % 7 == 0) {
                 finalList.add(day)
                 day = mutableListOf()
             }
@@ -326,14 +364,14 @@ class TestObjectFactory {
         return finalList
     }
 
-    fun makeWeatherDataEntity5DayListInOrder(): List<List<WeatherDataEntity>>{
+    fun makeWeatherDataEntity5DayListInOrder(): List<List<WeatherDataEntity>> {
         val finalList = mutableListOf<List<WeatherDataEntity>>()
         val day1 = listOf(makeWeatherDataEntity(1), makeWeatherDataEntity(2))
         finalList.add(day1)
         var day = mutableListOf<WeatherDataEntity>()
-        for( i in 3..30){
+        for (i in 3..30) {
             day.add(makeWeatherDataEntity(i))
-            if((i-2)%7 == 0){
+            if ((i - 2) % 7 == 0) {
                 finalList.add(day)
                 day = mutableListOf()
             }

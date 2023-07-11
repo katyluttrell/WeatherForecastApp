@@ -14,7 +14,7 @@ data class WeatherData(
     val main: Main,
     val weather: Weather,
     val wind: Wind,
-):Parcelable
+) : Parcelable
 
 @Parcelize
 data class Main(
@@ -22,20 +22,20 @@ data class Main(
     val tempMin: Double,
     val tempMax: Double,
     val humidity: String,
-):Parcelable
+) : Parcelable
 
 @Parcelize
 data class Weather(
     val main: String,
     val description: String,
     val icon: String
-): Parcelable
+) : Parcelable
 
 @Parcelize
 data class Wind(
     val speed: Double,
     val gust: Double
-):Parcelable
+) : Parcelable
 
 fun Main.asEntity(): MainEntity = MainEntity(temp, tempMin, tempMax, humidity)
 fun Weather.asEntity(): WeatherEntity = WeatherEntity(main, description, icon)
@@ -45,9 +45,9 @@ fun WeatherData.asEntity(zipcode: String): WeatherDataEntity =
 
 //Data must already be in order by time stamp. This simply arranges into days.
 fun organizeWeatherDataByDay(weatherList: List<WeatherData>): List<List<WeatherData>>? {
-    return if(weatherList.isEmpty()){
-         null
-    }else {
+    return if (weatherList.isEmpty()) {
+        null
+    } else {
         val listOfDays = mutableListOf<List<WeatherData>>()
         var oneDayForecastList = mutableListOf<WeatherData>()
         var currentDay: Int = weatherList[0].dtTxt.dayOfYear

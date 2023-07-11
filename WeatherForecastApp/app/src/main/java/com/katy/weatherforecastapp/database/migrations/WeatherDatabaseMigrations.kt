@@ -15,5 +15,5 @@ val migration_1_2 = object : Migration(1, 2) {
         database.execSQL("INSERT OR REPLACE INTO weather_temp (zipcode, dtTxt, temp, tempMin, tempMax, humidity, main, description, icon, speed, gust) SELECT 'nozip', dtTxt, temp, tempMin, tempMax, humidity, main, description, icon, speed, gust FROM weatherData")
         database.execSQL("DROP TABLE weatherData")
         database.execSQL("ALTER TABLE weather_temp RENAME TO weatherData")
-  }
+    }
 }

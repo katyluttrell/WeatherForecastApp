@@ -13,7 +13,7 @@ internal class NetworkUtilsTest {
 
     @Test
     fun hasInternetAccessTrueWifiOnly() {
-        val mockContext = mockk<Context>(relaxed=true)
+        val mockContext = mockk<Context>(relaxed = true)
         val mockConnectivityManager = mockk<ConnectivityManager>()
         val mockNetworkCapabilities = mockk<NetworkCapabilities>()
         every { mockNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) } returns true

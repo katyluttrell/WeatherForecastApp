@@ -12,10 +12,10 @@ fun buildClient(): OkHttpClient = OkHttpClient.Builder().build()
 
 fun buildRetrofit(): Retrofit {
     return Retrofit.Builder().client(buildClient()).baseUrl(BASE_URL).addConverterFactory(
-            MoshiConverterFactory.create(
-                Moshi.Builder().add(WeatherAdapter()).add(DateAdapter()).build()
-            )
-        ).build()
+        MoshiConverterFactory.create(
+            Moshi.Builder().add(WeatherAdapter()).add(DateAdapter()).build()
+        )
+    ).build()
 }
 
 fun buildApiService(): OpenWeatherApiService =

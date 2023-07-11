@@ -1,22 +1,17 @@
 package com.katy.weatherforecastapp.viewmodel
 
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.NetworkResult
-import com.katy.weatherforecastapp.network.OpenWeatherApi
 import com.katy.weatherforecastapp.repository.LocationDataErrorCallbacks
 import com.katy.weatherforecastapp.repository.LocationRepository
 import com.katy.weatherforecastapp.repository.WeatherDataErrorCallbacks
 import com.katy.weatherforecastapp.repository.WeatherRepository
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel

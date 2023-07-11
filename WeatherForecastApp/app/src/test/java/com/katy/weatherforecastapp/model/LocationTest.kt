@@ -7,9 +7,13 @@ import org.junit.Test
 
 internal class LocationTest {
 
-    private val testObjectFactory  = TestObjectFactory()
+    private val testObjectFactory = TestObjectFactory()
+
     @Test
     fun testAsEntity() {
-        assertEquals(testObjectFactory.makeLocationEntityObject(), testObjectFactory.makeLocationObject().asEntity())
+        assertEquals(
+            testObjectFactory.makeLocationEntityObject(),
+            testObjectFactory.makeLocationObject().asEntity()
+        )
     }
 }

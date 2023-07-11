@@ -6,13 +6,14 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-internal class WeatherDataEntityTest{
+internal class WeatherDataEntityTest {
     private lateinit var testObjectFactory: TestObjectFactory
 
     @Before
     fun setup() {
         testObjectFactory = TestObjectFactory()
     }
+
     @Test
     fun testMainAsExternalModel() {
         Assert.assertEquals(
@@ -45,7 +46,8 @@ internal class WeatherDataEntityTest{
         )
     }
 
-    @Test fun testSortWeatherDataEntitiesByTimeStamp(){
+    @Test
+    fun testSortWeatherDataEntitiesByTimeStamp() {
         val beforeList = testObjectFactory.makeWeatherDataEntityListOutOfOrder()
         val expectedList = testObjectFactory.makeWeatherDataListOrganizedByTimestamp()
         assertEquals(expectedList, sortWeatherDataEntitiesByTimeStamp(beforeList))

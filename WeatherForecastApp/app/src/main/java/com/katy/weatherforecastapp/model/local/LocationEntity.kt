@@ -8,13 +8,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "location")
-data class LocationEntity (
+data class LocationEntity(
     @PrimaryKey
     val zipcode: String,
     val locationName: String,
     val lat: String,
     val lon: String
-    ): Parcelable
+) : Parcelable
 
 fun LocationEntity.asExternalModel() = Location(
     zipcode, locationName, lat, lon

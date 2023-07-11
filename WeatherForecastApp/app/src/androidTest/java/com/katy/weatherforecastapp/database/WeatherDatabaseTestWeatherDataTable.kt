@@ -44,7 +44,9 @@ class WeatherDatabaseTestWeatherDataTable {
         val weatherData = WeatherDataFactory().makeWeatherData()
         weatherDataDao.addWeatherData(weatherData.asEntity("80303"))
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
+        runBlocking {
+            retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() }
+        }
         assertEquals(weatherData, retrievedData[0])
     }
 
@@ -52,7 +54,9 @@ class WeatherDatabaseTestWeatherDataTable {
     @Throws(Exception::class)
     fun testReadDataEmptyTable() {
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
+        runBlocking {
+            retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() }
+        }
         assertEquals(emptyList<WeatherData>(), retrievedData)
     }
 
@@ -66,7 +70,9 @@ class WeatherDatabaseTestWeatherDataTable {
         weatherDataDao.addWeatherData(data.asEntity("80303"))
         weatherDataDao.addWeatherData(conflictData.asEntity("80303"))
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
+        runBlocking {
+            retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() }
+        }
         assertEquals(1, retrievedData.size)
         assertEquals(conflictData, retrievedData[0])
     }
@@ -77,7 +83,9 @@ class WeatherDatabaseTestWeatherDataTable {
         weatherDataDao.addWeatherData(WeatherDataFactory().makeWeatherData().asEntity("80303"))
         runBlocking { weatherDataDao.deleteAll() }
         var retrievedData: List<WeatherData>
-        runBlocking { retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() } }
+        runBlocking {
+            retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() }
+        }
         assertEquals(emptyList<WeatherData>(), retrievedData)
     }
 }

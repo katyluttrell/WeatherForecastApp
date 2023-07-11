@@ -1,6 +1,5 @@
 package com.katy.weatherforecastapp.model.remote
 
-import androidx.annotation.VisibleForTesting
 import com.katy.weatherforecastapp.model.*
 import com.squareup.moshi.Json
 import java.time.LocalDateTime
@@ -46,22 +45,25 @@ fun NetworkWeatherData.asExternalModel(): WeatherData = WeatherData(
     wind.asExternalModel()
 )
 
-fun NetworkMain.asExternalModel(): Main = Main(temp, tempMin, tempMax, humidity )
+fun NetworkMain.asExternalModel(): Main = Main(temp, tempMin, tempMax, humidity)
 fun NetworkWeather.asExternalModel(): Weather = Weather(main, description, icon)
 fun NetworkWind.asExternalModel(): Wind = Wind(speed, gust)
 
-fun NetworkFiveDayForecast.asOrganizedWeatherDataList(): List<List<WeatherData>>?{
+fun NetworkFiveDayForecast.asOrganizedWeatherDataList(): List<List<WeatherData>>? {
     val timezoneResolvedList = resolveTimeZone(list, city.timezone)
     return organizeWeatherDataByDay(timezoneResolvedList)
 }
 
 
-private fun resolveTimeZone(list: List<NetworkWeatherData>, offset:Int): List<WeatherData> =
-    list.map {  WeatherData(
-        convertToLocalTime(it.dtTxt, offset),
-        it.main.asExternalModel(),
-        it.weather.asExternalModel(),
-        it.wind.asExternalModel())}
+private fun resolveTimeZone(list: List<NetworkWeatherData>, offset: Int): List<WeatherData> =
+    list.map {
+        WeatherData(
+            convertToLocalTime(it.dtTxt, offset),
+            it.main.asExternalModel(),
+            it.weather.asExternalModel(),
+            it.wind.asExternalModel()
+        )
+    }
 
 
 private fun convertToLocalTime(date: LocalDateTime, shift: Int): LocalDateTime {

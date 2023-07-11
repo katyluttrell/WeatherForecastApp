@@ -1,12 +1,9 @@
 package com.katy.weatherforecastapp.repository
-
-interface DataErrorCallbacks{
+interface DataErrorCallbacks {
     fun onNetworkError()
     fun onNoInternetNoData()
 }
-
-interface LocationDataErrorCallbacks: DataErrorCallbacks{
+interface LocationDataErrorCallbacks : DataErrorCallbacks {
     fun onInvalidZipcode()
 }
-
-interface WeatherDataErrorCallbacks: DataErrorCallbacks{}
+interface WeatherDataErrorCallbacks : DataErrorCallbacks {}

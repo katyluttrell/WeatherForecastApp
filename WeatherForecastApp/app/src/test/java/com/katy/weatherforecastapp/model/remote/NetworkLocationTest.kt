@@ -7,7 +7,6 @@ import org.junit.Test
 
 internal class NetworkLocationTest {
     private val testObjectFactory = TestObjectFactory()
-
     @Test
     fun testAsExternalModule() {
         Assert.assertEquals(

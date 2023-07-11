@@ -33,7 +33,19 @@ class MigrationTestsWeatherDataTable {
         assert(newDb.version == 2)
         val cursor = newDb.query("SELECT * FROM weatherData")
         val columnNames = cursor.columnNames
-        val expectedColumnNames = listOf("zipcode", "dtTxt", "temp", "tempMin", "tempMax", "humidity", "main", "description", "icon", "speed", "gust")
+        val expectedColumnNames = listOf(
+            "zipcode",
+            "dtTxt",
+            "temp",
+            "tempMin",
+            "tempMax",
+            "humidity",
+            "main",
+            "description",
+            "icon",
+            "speed",
+            "gust"
+        )
         assert(columnNames.toList().containsAll(expectedColumnNames))
         cursor.moveToFirst()
         assertEquals("nozip", cursor.getString(0))
@@ -41,7 +53,7 @@ class MigrationTestsWeatherDataTable {
         assert(72.5 == cursor.getDouble(2))
         assert(60.1 == cursor.getDouble(3))
         assert(100.4 == cursor.getDouble(4))
-        assertEquals( "0.2", cursor.getString(5))
+        assertEquals("0.2", cursor.getString(5))
         assertEquals("rain", cursor.getString(6))
         assertEquals("super heavy rain", cursor.getString(7))
         assertEquals("11d", cursor.getString(8))
@@ -57,7 +69,19 @@ class MigrationTestsWeatherDataTable {
         assert(newDb.version == 2)
         val cursor = newDb.query("SELECT * FROM weatherData")
         val columnNames = cursor.columnNames
-        val expectedColumnNames = listOf("zipcode", "dtTxt", "temp", "tempMin", "tempMax", "humidity", "main", "description", "icon", "speed", "gust")
+        val expectedColumnNames = listOf(
+            "zipcode",
+            "dtTxt",
+            "temp",
+            "tempMin",
+            "tempMax",
+            "humidity",
+            "main",
+            "description",
+            "icon",
+            "speed",
+            "gust"
+        )
         assert(columnNames.toList().containsAll(expectedColumnNames))
         cursor.moveToFirst()
         assert(cursor.count == 0)

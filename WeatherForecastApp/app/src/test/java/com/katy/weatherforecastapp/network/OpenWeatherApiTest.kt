@@ -3,7 +3,9 @@ package com.katy.weatherforecastapp.network
 import com.katy.weatherforecastapp.model.remote.NetworkFiveDayForecast
 import com.katy.weatherforecastapp.model.remote.NetworkLocation
 import com.katy.weatherforecastapp.testObjects.TestObjectFactory
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
@@ -49,6 +51,7 @@ internal class OpenWeatherApiTest {
         val response = openWeatherApi.getLocation("80303")
         assertEquals(expectedResponse, response)
     }
+
     @Test
     fun testGetLocation404Error() = runTest {
         val mockResponse = Response.error<NetworkLocation>(
@@ -77,7 +80,8 @@ internal class OpenWeatherApiTest {
     fun testGetFiveDayForecastHappyPath() = runTest {
         coEvery { mockApiService.getFiveDayForecast(any(), any(), any(), any()) } returns
                 Response.success(testObjectFactory.makeNetwork5DayForecastUTC())
-        val expectedResponse = NetworkResult.Success(testObjectFactory.makeWeatherData5DayListInOrder())
+        val expectedResponse =
+            NetworkResult.Success(testObjectFactory.makeWeatherData5DayListInOrder())
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
     }
@@ -89,13 +93,21 @@ internal class OpenWeatherApiTest {
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
     }
+
     @Test
     fun testGetFiveDayForecastGeneralError() = runTest {
         val mockResponse = Response.error<NetworkFiveDayForecast>(
             400,
             ResponseBody.create("application/json".toMediaType(), errorContent)
         )
-        coEvery { mockApiService.getFiveDayForecast(any(), any(), any(), any()) } returns mockResponse
+        coEvery {
+            mockApiService.getFiveDayForecast(
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns mockResponse
         val expectedResponse = NetworkResult.NetworkError
         val response = openWeatherApi.getFiveDayForecast("123", "123")
         assertEquals(expectedResponse, response)
