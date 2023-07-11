@@ -68,10 +68,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             locationRepository.getLocationFlow(zipcode, callbacks)
                 .collect {
-                    if(it != null) {
-                        location.postValue(it)
-                        startObservingWeatherData(it)
-                    }
+                    location.postValue(it)
+                    startObservingWeatherData(it)
                 }
         }
     }
@@ -91,12 +89,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             weatherRepository.getFiveDayForecastListFlow(loc, callbacks)
                 .collect {
-                    //TODO implement when this is null (unable to get data)
-                    // Probably get rid of recycler if the city changed
-                    // but theres not data for it
-                    if(it != null) {
-                        weatherDataList.postValue(it)
-                    }
+                    weatherDataList.postValue(it)
                 }
         }
     }

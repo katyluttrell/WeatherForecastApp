@@ -8,7 +8,7 @@ interface WeatherRepository {
     suspend fun getFiveDayForecastListFlow(
         location: Location,
         errorCallbacks: WeatherDataErrorCallbacks
-    ): Flow<List<List<WeatherData>>?>
+    ): Flow<List<List<WeatherData>>>
 
     suspend fun deleteAllWeatherData()
 }

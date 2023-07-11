@@ -45,7 +45,7 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun getFiveDayForecastListFlow(
         location: Location,
         errorCallbacks: WeatherDataErrorCallbacks
-    ): Flow<List<List<WeatherData>>?> {
+    ): Flow<List<List<WeatherData>>> {
         val flow = weatherDataDao.getWeatherData(location.zipcode)
         val first = flow.first()
         if (first.isEmpty()) {

@@ -35,7 +35,7 @@ class LocationRepositoryImpl @Inject constructor(
     override suspend fun getLocationFlow(
         zipcode: String,
         errorCallbacks: LocationDataErrorCallbacks
-    ): Flow<Location?> {
+    ): Flow<Location> {
         val flow = locationDao.getLocation(zipcode)
         val location = flow.first()
         if (location == null) {
