@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,6 @@ import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import com.katy.weatherforecastapp.ui.dialog.OnOkCallback
-import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -44,8 +42,8 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpObservers()
-        if(!viewModel.location.isInitialized) {
-            viewModel.currentDialog.postValue(MainViewDialog.ZipCodePrompt)
+        if (!viewModel.location.isInitialized && findNavController().currentDestination?.id != R.id.zipCodeDialogFragment) {
+            promptForZipCode()
         }
     }
 
@@ -65,16 +63,13 @@ class MainFragment : Fragment() {
     }
 
     private fun showDialog(mainViewDialog: MainViewDialog) {
-        when (mainViewDialog) {
-            MainViewDialog.ZipCodePrompt -> promptForZipCode()
-            else -> alertDialogFactory.createDialog(
-                AlertDialog.Builder(context),
-                mainViewDialog, object : OnOkCallback {
-                    override fun onOkPress() {
-                        viewModel.currentDialog.postValue(null)
-                    }
-                }).show()
-        }
+        alertDialogFactory.createDialog(
+            AlertDialog.Builder(context),
+            mainViewDialog, object : OnOkCallback {
+                override fun onOkPress() {
+                    viewModel.currentDialog.postValue(null)
+                }
+            }).show()
     }
 
     private fun promptForZipCode() {
@@ -87,7 +82,7 @@ class MainFragment : Fragment() {
         val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
-            viewModel.editLocation()
+            promptForZipCode()
         }
     }
 
