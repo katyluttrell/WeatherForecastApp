@@ -36,8 +36,6 @@ class MainViewModel @Inject constructor(
         MutableLiveData<List<List<WeatherData>>>()
     }
 
-    var hasInternet: Boolean? = null
-
     fun editLocation() {
         currentDialog.postValue(
             MainViewDialog.ZipCodePrompt

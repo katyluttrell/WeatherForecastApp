@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -19,41 +20,23 @@ import com.katy.weatherforecastapp.viewmodel.SingleDayForecastViewModel
 
 class SingleDayForecastFragment : Fragment() {
 
-    companion object {
-        const val WEATHER_DATA_KEY = "DayWeatherData"
-        fun newInstance(dayWeatherData: List<WeatherData>): SingleDayForecastFragment {
-            val fragment = SingleDayForecastFragment()
-            val args = Bundle()
-            args.putParcelableArrayList(WEATHER_DATA_KEY, ArrayList<WeatherData>(dayWeatherData))
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
-    private lateinit var viewModel: SingleDayForecastViewModel
-    private var dayWeatherData: List<WeatherData>? = null
+    private val args: SingleDayForecastFragmentArgs by navArgs()
+    private val viewModel: SingleDayForecastViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        dayWeatherData = arguments?.getParcelableArrayList<WeatherData>(WEATHER_DATA_KEY)?.toList()
         return inflater.inflate(R.layout.fragment_single_day_forecast, container, false)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SingleDayForecastViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val currentData = dayWeatherData
-        if (!currentData.isNullOrEmpty()) {
-            populateCurrentWeatherData(currentData[0])
-            if (currentData.size > 1) {
-                setUpLaterTimesRecycler(currentData.subList(1, currentData.size))
+        val dayWeatherData = args.weatherDataList.asList()
+        if (!dayWeatherData.isNullOrEmpty()) {
+            populateCurrentWeatherData(dayWeatherData[0])
+            if (dayWeatherData.size > 1) {
+                setUpLaterTimesRecycler(dayWeatherData.subList(1, dayWeatherData.size))
             }
         }
     }
@@ -61,8 +44,7 @@ class SingleDayForecastFragment : Fragment() {
     private fun setUpLaterTimesRecycler(subList: List<WeatherData>) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.laterTimesRecycler)
         recyclerView?.layoutManager = LinearLayoutManager(activity)
-        recyclerView?.adapter = activity?.let { TimeForecastAdapter(subList, it) }
-
+        recyclerView?.adapter = TimeForecastAdapter(subList)
     }
 
     private fun populateCurrentWeatherData(weatherNow: WeatherData) {

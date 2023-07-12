@@ -6,19 +6,19 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.LinkFactory
-import com.katy.weatherforecastapp.ui.SingleDayForecastFragment
-import com.katy.weatherforecastapp.util.Utils
+import com.katy.weatherforecastapp.ui.MainFragmentDirections
+import com.katy.weatherforecastapp.util.RecyclerViewAdapterUtils
+import com.katy.weatherforecastapp.util.capitalize
 
 class DayForecastAdapter(
-    private val dataList: List<List<WeatherData>>, private val activity: FragmentActivity
+    private val dataList: List<List<WeatherData>>
 ) : RecyclerView.Adapter<DayForecastAdapter.ViewHolder>() {
 
+    val utils = RecyclerViewAdapterUtils()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View =
             LayoutInflater.from(parent.context).inflate(R.layout.day_forecast_card, parent, false)
@@ -30,57 +30,22 @@ class DayForecastAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val context = holder.itemView.context
         val day = dataList[position]
-        val data = getMiddleOrFirstTime(day)
-        setWeatherImage(holder.weatherImage, data.weather.icon)
-        holder.dateText.text = Utils.formatDate(data.dtTxt, activity)
-        holder.weatherText.text = data.weather.main
-        holder.tempText.text = activity.getString(R.string.temp_format, data.main.temp.toInt())
-        setTempIconColor(holder.tempIcon, data.main.temp)
-        holder.windText.text =
-            activity.getString(R.string.wind_text_format_mph, data.wind.speed.toInt())
-        holder.itemView.setOnClickListener { onClick(dataList[position]) }
-    }
-
-    private fun getMiddleOrFirstTime(day: List<WeatherData>): WeatherData {
-        return if (day.size == 8) {
-            day[4]
-        } else {
-            day[0]
+        val data = utils.getMiddleOrFirstTime(day)
+        data?.let {
+            utils.setWeatherImage(holder.weatherImage, it.weather.icon)
+            holder.dateText.text = utils.formatDate(it.dtTxt)?.let { str -> context.getString(str) }
+                ?: it.dtTxt.dayOfWeek.toString().capitalize()
+            holder.weatherText.text = it.weather.main
+            holder.tempText.text = context.getString(R.string.temp_format, it.main.temp.toInt())
+            val tempIconColor = utils.getTempIconColor(data.main.temp)
+            holder.tempIcon.clearColorFilter()
+            tempIconColor?.let {color -> holder.tempIcon.setColorFilter( ContextCompat.getColor(context, color))}
+            holder.windText.text =
+                context.getString(R.string.wind_text_format_mph, it.wind.speed.toInt())
         }
-    }
-
-
-    private fun setWeatherImage(weatherImage: ImageView, icon: String) {
-        val url = LinkFactory().openWeatherIconLink(icon)
-        weatherImage.load(url) {
-            size(350, 350)
-            placeholder(R.drawable.baseline_sync)
-            error(R.drawable.baseline_sync_problem_24)
-        }
-    }
-
-    private fun setTempIconColor(tempIcon: ImageView, temp: Double) {
-        when {
-            temp <= 32.0 -> {
-                tempIcon.contentDescription = activity.getString(R.string.blue_thermostat_icon)
-                tempIcon.setColorFilter(
-                    ContextCompat.getColor(
-                        activity, R.color.md_theme_light_primary
-                    )
-                )
-            }
-            temp >= 85.0 -> {
-                tempIcon.contentDescription = activity.getString(R.string.red_thermostat_icon)
-                val color = ContextCompat.getColor(activity, R.color.md_theme_light_error)
-                tempIcon.setColorFilter(color)
-            }
-            else -> {
-                tempIcon.contentDescription =
-                    activity.getString(R.string.thermostat_icon_content_description)
-                tempIcon.clearColorFilter()
-            }
-        }
+        holder.itemView.setOnClickListener { onClick(day, holder.itemView) }
     }
 
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
@@ -92,12 +57,10 @@ class DayForecastAdapter(
         val windText: TextView = ItemView.findViewById(R.id.windText)
     }
 
-    fun onClick(dayData: List<WeatherData>) {
-        val fragmentManager = activity.supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.container, SingleDayForecastFragment.newInstance(dayData))
-        fragmentTransaction.addToBackStack("SingleDayForecastFragment")
-        fragmentTransaction.commit()
+    fun onClick(dayData: List<WeatherData>, view: View) {
+        val action =
+            MainFragmentDirections.actionMainFragmentToSingleDayForecastFragment(dayData.toTypedArray())
+        view.findNavController().navigate(action)
     }
 
 

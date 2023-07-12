@@ -15,7 +15,6 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.NetworkUtils
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import com.katy.weatherforecastapp.ui.dialog.OnOkCallback
@@ -28,21 +27,10 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
 
     @Inject
-    lateinit var networkUtils: NetworkUtils
-
-    @Inject
     lateinit var alertDialogFactory: AlertDialogFactory
 
     private val viewModel: MainViewModel by viewModels()
 
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -107,7 +95,7 @@ class MainFragment : Fragment() {
     private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>) {
         val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
         forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        forecastRecyclerView?.adapter = activity?.let { DayForecastAdapter(weatherDataList, it) }
+        forecastRecyclerView?.adapter = DayForecastAdapter(weatherDataList)
     }
 
 }
