@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,7 +31,7 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var alertDialogFactory: AlertDialogFactory
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -74,12 +76,7 @@ class MainFragment : Fragment() {
     }
 
     private fun promptForZipCode() {
-        activity?.supportFragmentManager?.let {
-            ZipCodeDialogFragment(viewModel).show(
-                it,
-                "ZipCodeDialogFragment"
-            )
-        }
+        findNavController().navigate(R.id.action_mainFragment_to_zipCodeDialogFragment)
     }
 
     private fun setUpView(location: Location) {

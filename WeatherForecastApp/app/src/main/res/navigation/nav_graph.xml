@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_mainFragment_to_singleDayForecastFragment"
             app:destination="@id/singleDayForecastFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_zipCodeDialogFragment"
+            app:destination="@id/zipCodeDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/singleDayForecastFragment"
@@ -24,4 +27,8 @@
             app:argType="com.katy.weatherforecastapp.model.WeatherData[]" />
 
     </fragment>
+    <dialog
+        android:id="@+id/zipCodeDialogFragment"
+        android:name="com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment"
+        android:label="ZipCodeDialogFragment" />
 </navigation>
