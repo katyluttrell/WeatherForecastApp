@@ -44,7 +44,9 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpObservers()
-        viewModel.currentDialog.postValue(MainViewDialog.ZipCodePrompt)
+        if(!viewModel.location.isInitialized) {
+            viewModel.currentDialog.postValue(MainViewDialog.ZipCodePrompt)
+        }
     }
 
     private fun setUpObservers() {
