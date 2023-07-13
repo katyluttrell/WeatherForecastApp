@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ZipCodeDialogFragment : DialogFragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
+    var zipcodeAttempted = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,7 +35,9 @@ class ZipCodeDialogFragment : DialogFragment() {
 
     private fun setObservers() {
         viewModel.location.observe(this) {
-            dialog?.dismiss()
+            if(zipcodeAttempted) {
+                dialog?.dismiss()
+            }
         }
         viewModel.zipcodeValidationError.observe(this) {
             if (it) {
@@ -52,6 +55,7 @@ class ZipCodeDialogFragment : DialogFragment() {
             editText?.let {
                 val entry = it.editText?.text.toString()
                 if (isValidZipCode(entry)) {
+                    zipcodeAttempted = true
                     viewModel.startObservingLocationData(entry)
                 } else {
                     displayValidationError(editText)
