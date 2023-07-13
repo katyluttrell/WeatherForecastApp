@@ -30,5 +30,7 @@
     <dialog
         android:id="@+id/zipCodeDialogFragment"
         android:name="com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment"
-        android:label="ZipCodeDialogFragment" />
+        android:label="@string/zip_code_dialog_fragment"
+        tools:layout="@layout/zip_code_dialog">
+    </dialog>
 </navigation>
