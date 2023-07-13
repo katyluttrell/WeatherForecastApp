@@ -13,7 +13,6 @@ import com.katy.weatherforecastapp.MainActivity
 import com.katy.weatherforecastapp.R
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
