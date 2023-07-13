@@ -35,16 +35,7 @@ class MainViewModel @Inject constructor(
     val weatherDataList: MutableLiveData<List<List<WeatherData>>> by lazy {
         MutableLiveData<List<List<WeatherData>>>()
     }
-
-    var hasInternet: Boolean? = null
-
-    fun editLocation() {
-        currentDialog.postValue(
-            MainViewDialog.ZipCodePrompt
-        )
-    }
-
-
+    
     fun startObservingLocationData(zipcode: String) {
         val callbacks = object : LocationDataErrorCallbacks {
             override fun onInvalidZipcode() {

@@ -46,10 +46,10 @@ class TestObjectFactory {
         }
     }
 
-    private fun makeDateTimeUTC(version: Int): LocalDateTime = makeDateTime(version).plusHours(6)
+    fun makeDateTimeUTC(version: Int = 1): LocalDateTime = makeDateTime(version).plusHours(6)
 
 
-    private fun makeDateTime(version: Int): LocalDateTime {
+    fun makeDateTime(version: Int = 1): LocalDateTime {
         return when (version) {
             1 -> LocalDateTime.of(2023, Month.JULY, 9, 18, 0, 0)
             2 -> LocalDateTime.of(2023, Month.JULY, 9, 21, 0, 0)
@@ -377,5 +377,13 @@ class TestObjectFactory {
             }
         }
         return finalList
+    }
+
+    fun makeOneDayOfWeatherData(): List<WeatherData> {
+        val day = mutableListOf<WeatherData>()
+        for (i in 24..31) {
+            day.add(makeWeatherData(i))
+        }
+        return day
     }
 }

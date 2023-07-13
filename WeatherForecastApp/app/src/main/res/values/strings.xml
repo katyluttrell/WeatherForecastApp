@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">Weather</string>
-    <string name="thermostat_icon_content_description">Thermostat Icon</string>
-    <string name="wind_power_icon_content_description">Wind Power Icon</string>
+    <string name="thermostat_icon_content_description">Thermostat</string>
+    <string name="wind_power_icon_content_description">Wind Power</string>
     <string name="temp_format">%1$d°F</string>
-    <string name="blue_thermostat_icon">Blue Thermostat Icon</string>
-    <string name="red_thermostat_icon">Red Thermostat Icon</string>
+    <string name="blue_thermostat_icon">Blue Thermostat</string>
+    <string name="red_thermostat_icon">Red Thermostat</string>
     <string name="wind_text_format_mph">%1$d mph</string>
     <string name="chevron">Chevron</string>
     <string name="weather_image">Weather Image</string>
@@ -26,4 +26,7 @@
     <string name="yesterday">Yesterday</string>
     <string name="enter_you_zip_code">Enter you zip code</string>
     <string name="zip_code">Zip Code</string>
+    <string name="fragment_main_label">fragment_main</string>
+    <string name="fragment_single_day_forecast_label">fragment_single_day_forecast</string>
+    <string name="zip_code_dialog_fragment">ZipCodeDialogFragment</string>
 </resources>

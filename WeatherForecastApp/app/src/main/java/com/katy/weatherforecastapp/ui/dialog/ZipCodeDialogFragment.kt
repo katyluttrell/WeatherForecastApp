@@ -1,7 +1,5 @@
 package com.katy.weatherforecastapp.ui.dialog
 
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,33 +7,27 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.core.text.isDigitsOnly
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.textfield.TextInputLayout
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ZipCodeDialogFragment(val viewModel: MainViewModel) : DialogFragment() {
+class ZipCodeDialogFragment : DialogFragment() {
 
-    lateinit var dialogView: View
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(requireContext())
-        dialogView = layoutInflater.inflate(R.layout.zip_code_dialog, null)
-        builder.setView(dialogView)
-            .setCancelable(false)
-        return builder.create()
-    }
-
+    private val viewModel: MainViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return dialogView
+        return inflater.inflate(R.layout.zip_code_dialog, container)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        isCancelable = false
         setObservers()
         setButtonBehavior()
     }

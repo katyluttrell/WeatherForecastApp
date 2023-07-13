@@ -7,7 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -15,11 +16,9 @@ import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.network.NetworkUtils
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import com.katy.weatherforecastapp.ui.dialog.OnOkCallback
-import com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -28,21 +27,10 @@ import javax.inject.Inject
 class MainFragment : Fragment() {
 
     @Inject
-    lateinit var networkUtils: NetworkUtils
-
-    @Inject
     lateinit var alertDialogFactory: AlertDialogFactory
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
-    companion object {
-        fun newInstance() = MainFragment()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.hasInternet = networkUtils.hasInternetAccess(requireContext())
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +42,9 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpObservers()
-        viewModel.currentDialog.postValue(MainViewDialog.ZipCodePrompt)
+        if (!viewModel.location.isInitialized && findNavController().currentDestination?.id != R.id.zipCodeDialogFragment) {
+            promptForZipCode()
+        }
     }
 
     private fun setUpObservers() {
@@ -73,25 +63,17 @@ class MainFragment : Fragment() {
     }
 
     private fun showDialog(mainViewDialog: MainViewDialog) {
-        when (mainViewDialog) {
-            MainViewDialog.ZipCodePrompt -> promptForZipCode()
-            else -> alertDialogFactory.createDialog(
-                AlertDialog.Builder(context),
-                mainViewDialog, object : OnOkCallback {
-                    override fun onOkPress() {
-                        viewModel.currentDialog.postValue(null)
-                    }
-                }).show()
-        }
+        alertDialogFactory.createDialog(
+            AlertDialog.Builder(context),
+            mainViewDialog, object : OnOkCallback {
+                override fun onOkPress() {
+                    viewModel.currentDialog.postValue(null)
+                }
+            }).show()
     }
 
     private fun promptForZipCode() {
-        activity?.supportFragmentManager?.let {
-            ZipCodeDialogFragment(viewModel).show(
-                it,
-                "ZipCodeDialogFragment"
-            )
-        }
+        findNavController().navigate(R.id.action_mainFragment_to_zipCodeDialogFragment)
     }
 
     private fun setUpView(location: Location) {
@@ -100,14 +82,14 @@ class MainFragment : Fragment() {
         val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
         editLocationButton?.visibility = View.VISIBLE
         editLocationButton?.setOnClickListener {
-            viewModel.editLocation()
+            promptForZipCode()
         }
     }
 
     private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>) {
         val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
         forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        forecastRecyclerView?.adapter = activity?.let { DayForecastAdapter(weatherDataList, it) }
+        forecastRecyclerView?.adapter = DayForecastAdapter(weatherDataList)
     }
 
 }

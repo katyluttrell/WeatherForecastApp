@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.katy.weatherforecastapp.ui.MainFragment"
+        android:label="@string/fragment_main_label"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_singleDayForecastFragment"
+            app:destination="@id/singleDayForecastFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_zipCodeDialogFragment"
+            app:destination="@id/zipCodeDialogFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/singleDayForecastFragment"
+        android:name="com.katy.weatherforecastapp.ui.SingleDayForecastFragment"
+        android:label="@string/fragment_single_day_forecast_label"
+        tools:layout="@layout/fragment_single_day_forecast">
+        <argument
+            android:name="weatherDataList"
+            app:argType="com.katy.weatherforecastapp.model.WeatherData[]" />
+
+    </fragment>
+    <dialog
+        android:id="@+id/zipCodeDialogFragment"
+        android:name="com.katy.weatherforecastapp.ui.dialog.ZipCodeDialogFragment"
+        android:label="@string/zip_code_dialog_fragment"
+        tools:layout="@layout/zip_code_dialog">
+    </dialog>
+</navigation>
