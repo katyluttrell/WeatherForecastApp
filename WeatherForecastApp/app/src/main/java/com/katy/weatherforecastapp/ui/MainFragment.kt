@@ -5,15 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.adapter.DayForecastAdapter
+import com.katy.weatherforecastapp.databinding.FragmentMainBinding
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.ui.dialog.AlertDialogFactory
@@ -30,13 +29,16 @@ class MainFragment : Fragment() {
     lateinit var alertDialogFactory: AlertDialogFactory
 
     private val viewModel: MainViewModel by activityViewModels()
-
+    private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_main, container, false
+        )
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,19 +79,17 @@ class MainFragment : Fragment() {
     }
 
     private fun setUpView(location: Location) {
-        val locationTitle = view?.findViewById<TextView>(R.id.locationText)
-        locationTitle?.text = location.locationName
-        val editLocationButton = view?.findViewById<FloatingActionButton>(R.id.editButton)
-        editLocationButton?.visibility = View.VISIBLE
-        editLocationButton?.setOnClickListener {
+        binding.locationText.text = location.locationName
+        binding.editButton.visibility = View.VISIBLE
+        binding.editButton.setOnClickListener {
             promptForZipCode()
         }
     }
 
     private fun setUpForecastRecycler(weatherDataList: List<List<WeatherData>>) {
-        val forecastRecyclerView = view?.findViewById<RecyclerView>(R.id.forecastRecyclerView)
-        forecastRecyclerView?.layoutManager = LinearLayoutManager(activity)
-        forecastRecyclerView?.adapter = DayForecastAdapter(weatherDataList)
+        val forecastRecyclerView = binding.forecastRecyclerView
+        forecastRecyclerView.layoutManager = LinearLayoutManager(activity)
+        forecastRecyclerView.adapter = DayForecastAdapter(weatherDataList)
     }
 
 }
