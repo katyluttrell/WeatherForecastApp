@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.core.text.isDigitsOnly
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.textfield.TextInputLayout
 import com.katy.weatherforecastapp.R
+import com.katy.weatherforecastapp.databinding.ZipCodeDialogBinding
 import com.katy.weatherforecastapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,13 +19,17 @@ import dagger.hilt.android.AndroidEntryPoint
 class ZipCodeDialogFragment : DialogFragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
-    var zipcodeAttempted = false
+    private lateinit var binding: ZipCodeDialogBinding
+    private var zipcodeAttempted = false
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.zip_code_dialog, container)
+        binding = DataBindingUtil.inflate(
+            inflater, R.layout.zip_code_dialog, container, false
+        )
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -31,35 +37,42 @@ class ZipCodeDialogFragment : DialogFragment() {
         isCancelable = false
         setObservers()
         setButtonBehavior()
+        if(savedInstanceState != null){
+            binding.zipCodeTextField.editText?.setText(savedInstanceState.getString(ZIPCODE_TEXT_KEY))
+            binding.zipCodeTextField.error = savedInstanceState.getString(ENTRY_ERROR_KEY)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(ZIPCODE_TEXT_KEY, binding.zipCodeTextField.editText?.text.toString())
+        outState.putString(ENTRY_ERROR_KEY, binding.zipCodeTextField.error.toString())
     }
 
     private fun setObservers() {
         viewModel.location.observe(this) {
-            if(zipcodeAttempted) {
-                dialog?.dismiss()
+            if (zipcodeAttempted) {
+                findNavController().navigateUp()
             }
         }
         viewModel.zipcodeValidationError.observe(this) {
             if (it) {
-                view?.findViewById<TextInputLayout>(R.id.zipCodeTextField)
-                    ?.let { it1 -> displayValidationError(it1) }
+                displayValidationError(binding.zipCodeTextField)
             }
         }
 
     }
 
     private fun setButtonBehavior() {
-        val button = view?.findViewById<Button>(R.id.okButton)
-        button?.setOnClickListener {
-            val editText = view?.findViewById<TextInputLayout>(R.id.zipCodeTextField)
-            editText?.let {
-                val entry = it.editText?.text.toString()
-                if (isValidZipCode(entry)) {
-                    zipcodeAttempted = true
-                    viewModel.startObservingLocationData(entry)
-                } else {
-                    displayValidationError(editText)
-                }
+        binding.okButton.setOnClickListener {
+            val textField = binding.zipCodeTextField
+            val entry = textField.editText?.text.toString()
+            if (isValidZipCode(entry)) {
+                zipcodeAttempted = true
+                binding.zipCodeTextField.error = ""
+                viewModel.startObservingLocationData(entry)
+            } else {
+                displayValidationError(textField)
             }
         }
     }
@@ -72,4 +85,8 @@ class ZipCodeDialogFragment : DialogFragment() {
         !zipCode.isNullOrEmpty() && zipCode.length == 5 && zipCode.isDigitsOnly()
 
 
+    companion object{
+        const val ZIPCODE_TEXT_KEY = "ZipcodeTextKey"
+        const val ENTRY_ERROR_KEY = "EntryErrorKey"
+    }
 }
