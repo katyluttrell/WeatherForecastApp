@@ -3,12 +3,11 @@ package com.katy.weatherforecastapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.katy.weatherforecastapp.R
+import com.katy.weatherforecastapp.databinding.DayForecastCardBinding
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.ui.MainFragmentDirections
 import com.katy.weatherforecastapp.util.RecyclerViewAdapterUtils
@@ -19,10 +18,10 @@ class DayForecastAdapter(
 ) : RecyclerView.Adapter<DayForecastAdapter.ViewHolder>() {
 
     val utils = RecyclerViewAdapterUtils()
+    private lateinit var binding: DayForecastCardBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.day_forecast_card, parent, false)
-        return ViewHolder(view)
+        binding = DayForecastCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -34,35 +33,24 @@ class DayForecastAdapter(
         val day = dataList[position]
         val data = utils.getMiddleOrFirstTime(day)
         data?.let {
-            utils.setWeatherImage(holder.weatherImage, it.weather.icon)
-            holder.dateText.text = utils.formatDate(it.dtTxt)?.let { str -> context.getString(str) }
+            utils.setWeatherImage(binding.weatherImage, it.weather.icon)
+            binding.dateText.text = utils.formatDate(it.dtTxt)?.let { str -> context.getString(str) }
                 ?: it.dtTxt.dayOfWeek.toString().capitalize()
-            holder.weatherText.text = it.weather.main
-            holder.tempText.text = context.getString(R.string.temp_format, it.main.temp.toInt())
+            binding.tempText.text = context.getString(R.string.temp_format, it.main.temp.toInt())
             val tempIconColor = utils.getTempIconColor(data.main.temp)
-            holder.tempIcon.clearColorFilter()
-            tempIconColor?.let {color -> holder.tempIcon.setColorFilter( ContextCompat.getColor(context, color))}
-            holder.windText.text =
+            binding.tempIcon.clearColorFilter()
+            tempIconColor?.let {color -> binding.tempIcon.setColorFilter( ContextCompat.getColor(context, color))}
+            binding.windText.text =
                 context.getString(R.string.wind_text_format_mph, it.wind.speed.toInt())
         }
         holder.itemView.setOnClickListener { onClick(day, holder.itemView) }
     }
 
-    class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
-        val weatherImage: ImageView = ItemView.findViewById(R.id.weatherImage)
-        val dateText: TextView = ItemView.findViewById(R.id.dateText)
-        val weatherText: TextView = ItemView.findViewById(R.id.weatherText)
-        val tempIcon: ImageView = ItemView.findViewById(R.id.tempIcon)
-        val tempText: TextView = ItemView.findViewById(R.id.tempText)
-        val windText: TextView = ItemView.findViewById(R.id.windText)
-    }
+    class ViewHolder(private val binding: DayForecastCardBinding) : RecyclerView.ViewHolder(binding.root)
 
     fun onClick(dayData: List<WeatherData>, view: View) {
         val action =
             MainFragmentDirections.actionMainFragmentToSingleDayForecastFragment(dayData.toTypedArray())
         view.findNavController().navigate(action)
     }
-
-
 }
-

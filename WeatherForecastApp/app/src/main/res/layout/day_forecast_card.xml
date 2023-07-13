@@ -1,98 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="5dp"
-    android:clickable="true">
-    <androidx.constraintlayout.widget.ConstraintLayout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:cardElevation="1dp"
+        app:cardCornerRadius="5dp"
+        android:clickable="true">
 
-        <ImageView
-            android:id="@+id/weatherImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_launcher_foreground"
-            android:contentDescription="@string/weather_image" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/dateText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/weatherImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/ic_launcher_foreground"
+                android:contentDescription="@string/weather_image" />
 
-        <TextView
-            android:id="@+id/weatherText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintBottom_toBottomOf="@id/tempIcon"
-            app:layout_constraintStart_toEndOf="@id/weatherImage"
-            app:layout_constraintTop_toTopOf="@id/tempIcon" />
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/tempIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            app:layout_constraintBottom_toBottomOf="@id/tempText"
-            app:layout_constraintTop_toTopOf="@id/tempText"
-            app:layout_constraintEnd_toStartOf="@id/tempText"
-            app:srcCompat="@drawable/baseline_thermostat_24"
-            android:contentDescription="@string/thermostat_icon_content_description" />
+            <TextView
+                android:id="@+id/weatherText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="@id/tempIcon"
+                app:layout_constraintStart_toEndOf="@id/weatherImage"
+                app:layout_constraintTop_toTopOf="@id/tempIcon" />
 
-        <TextView
-            android:id="@+id/tempText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:text="@string/temp_format"
-            app:layout_constraintBottom_toBottomOf="@id/windIcon"
-            app:layout_constraintTop_toTopOf="@id/windIcon"
-            app:layout_constraintEnd_toStartOf="@id/windIcon" />
+            <ImageView
+                android:id="@+id/tempIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintBottom_toBottomOf="@id/tempText"
+                app:layout_constraintTop_toTopOf="@id/tempText"
+                app:layout_constraintEnd_toStartOf="@id/tempText"
+                app:srcCompat="@drawable/baseline_thermostat_24"
+                android:contentDescription="@string/thermostat_icon_content_description" />
 
-        <ImageView
-            android:id="@+id/windIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            app:layout_constraintBottom_toBottomOf="@id/windText"
-            app:layout_constraintTop_toTopOf="@id/windText"
-            app:layout_constraintEnd_toStartOf="@id/windText"
-            app:srcCompat="@drawable/baseline_wind_power_24"
-            android:contentDescription="@string/wind_power_icon_content_description" />
+            <TextView
+                android:id="@+id/tempText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/temp_format"
+                app:layout_constraintBottom_toBottomOf="@id/windIcon"
+                app:layout_constraintTop_toTopOf="@id/windIcon"
+                app:layout_constraintEnd_toStartOf="@id/windIcon" />
 
-        <TextView
-            android:id="@+id/windText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/wind_text_format_mph"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/chevron" />
+            <ImageView
+                android:id="@+id/windIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintBottom_toBottomOf="@id/windText"
+                app:layout_constraintTop_toTopOf="@id/windText"
+                app:layout_constraintEnd_toStartOf="@id/windText"
+                app:srcCompat="@drawable/baseline_wind_power_24"
+                android:contentDescription="@string/wind_power_icon_content_description" />
 
-        <ImageView
-            android:id="@+id/chevron"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_chevron_right_24"
-            android:contentDescription="@string/chevron" />
+            <TextView
+                android:id="@+id/windText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/wind_text_format_mph"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/chevron" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+            <ImageView
+                android:id="@+id/chevron"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_chevron_right_24"
+                android:contentDescription="@string/chevron" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
