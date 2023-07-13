@@ -39,7 +39,7 @@ class SingleDayForecastFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val dayWeatherData = args.weatherDataList.asList()
-        if (!dayWeatherData.isNullOrEmpty()) {
+        if (dayWeatherData.isNotEmpty()) {
             binding.nowWeather = dayWeatherData[0]
             populateCurrentWeatherData(dayWeatherData[0])
             if (dayWeatherData.size > 1) {
