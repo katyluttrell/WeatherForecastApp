@@ -27,16 +27,17 @@ class DatabaseCleaningRoutines @Inject constructor(
         }
     }
 
-
-    @VisibleForTesting(otherwise=VisibleForTesting.PRIVATE )
-    internal fun getTodayAndNextFiveDays(today:LocalDateTime = LocalDateTime.now()): Set<String>{
-        val dateAdapter = DateAdapter()
-        val dateList = mutableListOf<String>()
-        for(i in 0..5){
-            val dayString = dateAdapter.localDateTimeToString(today.plusDays(i.toLong()))?.substring(0, 10)
-            dayString?.let{dateList.add(it)}
+    companion object {
+        internal fun getTodayAndNextFiveDays(today: LocalDateTime = LocalDateTime.now()): Set<String> {
+            val dateAdapter = DateAdapter()
+            val dateList = mutableListOf<String>()
+            for (i in 0..5) {
+                val dayString =
+                    dateAdapter.localDateTimeToString(today.plusDays(i.toLong()))?.substring(0, 10)
+                dayString?.let { dateList.add(it) }
+            }
+            return dateList.toSet()
         }
-        return dateList.toSet()
     }
 }
 
