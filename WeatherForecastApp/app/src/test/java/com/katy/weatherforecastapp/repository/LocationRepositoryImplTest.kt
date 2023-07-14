@@ -2,7 +2,6 @@ package com.katy.weatherforecastapp.repository
 
 import android.content.Context
 import com.katy.weatherforecastapp.database.dao.LocationDao
-import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.network.NetworkResult
 import com.katy.weatherforecastapp.network.NetworkUtils
 import com.katy.weatherforecastapp.network.OpenWeatherApi
@@ -12,7 +11,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -94,10 +92,8 @@ internal class LocationRepositoryImplTest {
                 flow {
                     emit(testObjectFactory.makeLocationEntityObject())
                 }
-        var returnedResult: Location?
 
-
-        returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).first()
+        val returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).first()
 
         assertEquals(expectedResult, returnedResult)
         assertFalse(onInvalidZipcodeTest)
@@ -106,17 +102,14 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testGetLocationFlowNullResultAndInternet() {
+    fun testGetLocationFlowNullResultAndInternet() = runTest(testDispatcher) {
         every { mockNetworkUtils.hasInternetAccess(any()) } returns true
         coEvery { locationRepositoryImpl.fetchLocation(any(), any()) } returns Unit
         val expectedResult = 0
         every { mockLocationDao.getLocation("80303") } returns
                 flow { emit(null) }
-        var returnedResult: Int
 
-        runBlocking {
-            returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
-        }
+        val returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
 
         assertEquals(expectedResult, returnedResult)
         coVerify { locationRepositoryImpl.fetchLocation("80303", callbacks) }
@@ -132,10 +125,8 @@ internal class LocationRepositoryImplTest {
         val expectedResult = 0
         every { mockLocationDao.getLocation("80303") } returns
                 flow { emit(null) }
-        var returnedResult: Int
 
-
-        returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
+        val returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
 
 
         assertEquals(expectedResult, returnedResult)

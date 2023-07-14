@@ -13,8 +13,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -54,7 +54,7 @@ internal class WeatherRepositoryImplTest {
         mockOpenWeatherApi = mockk<OpenWeatherApi>()
         mockNetworkUtils = mockk<NetworkUtils>()
         mockContext = mockk<Context>()
-        testDispatcher = UnconfinedTestDispatcher()
+        testDispatcher = StandardTestDispatcher()
 
         weatherRepositoryImpl = spyk(
             WeatherRepositoryImpl(
@@ -73,10 +73,10 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testCacheFiveDayForecastList() {
+    fun testCacheFiveDayForecastList() = runTest(testDispatcher) {
         val input = testObjectFactory.makeWeatherData5DayListInOrder()
         val outputData = testObjectFactory.makeWeatherDataEntity5DayListInOrder()
-        runBlocking { weatherRepositoryImpl.cacheFiveDayForecastList(input, "80303") }
+        weatherRepositoryImpl.cacheFiveDayForecastList(input, "80303")
 
         for (data in outputData.flatten()) {
             verify(exactly = 1) { mockWeatherDataDao.addWeatherData(data) }
@@ -84,18 +84,17 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testGetWeatherFlowHappyPath() {
+    fun testGetWeatherFlowHappyPath() = runTest(testDispatcher) {
         val expectedResult = testObjectFactory.makeWeatherData5DayListInOrder()
         val location = testObjectFactory.makeLocationObject()
         every { mockWeatherDataDao.getWeatherData("80303") } returns
                 flow {
                     emit(testObjectFactory.makeWeatherDataEntityListOutOfOrder())
                 }
-        var returnedResult: List<List<WeatherData>>?
-        runBlocking {
-            returnedResult =
-                weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).first()
-        }
+
+        val returnedResult =
+            weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).first()
+
 
         coVerify(inverse = true) { weatherRepositoryImpl.fetchFiveDayForecast(any(), any()) }
         Assert.assertEquals(expectedResult, returnedResult)
@@ -104,18 +103,17 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testGetWeatherFlowEmptyListAndInternet() {
+    fun testGetWeatherFlowEmptyListAndInternet() = runTest(testDispatcher) {
         val location = testObjectFactory.makeLocationObject()
         every { mockNetworkUtils.hasInternetAccess(any()) } returns true
         coEvery { weatherRepositoryImpl.fetchFiveDayForecast(location, callbacks) } returns Unit
         val expectedResult = 0
         every { mockWeatherDataDao.getWeatherData("80303") } returns
                 flow { emit(listOf<WeatherDataEntity>()) }
-        var returnedResult: Int
-        runBlocking {
-            returnedResult =
-                weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).count()
-        }
+
+        val returnedResult =
+            weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).count()
+
 
         Assert.assertEquals(expectedResult, returnedResult)
         coVerify { weatherRepositoryImpl.fetchFiveDayForecast(location, callbacks) }
@@ -124,18 +122,16 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testGetWeatherFlowEmptyListNoInternet() {
+    fun testGetWeatherFlowEmptyListNoInternet() = runTest(testDispatcher) {
         val location = testObjectFactory.makeLocationObject()
         every { mockNetworkUtils.hasInternetAccess(any()) } returns false
         coEvery { weatherRepositoryImpl.fetchFiveDayForecast(location, callbacks) } returns Unit
         val expectedResult = 0
         every { mockWeatherDataDao.getWeatherData("80303") } returns
                 flow { emit(listOf<WeatherDataEntity>()) }
-        var returnedResult: Int
-        runBlocking {
-            returnedResult =
-                weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).count()
-        }
+
+        val returnedResult =
+            weatherRepositoryImpl.getFiveDayForecastListFlow(location, callbacks).count()
 
         Assert.assertEquals(expectedResult, returnedResult)
         coVerify(inverse = true) { weatherRepositoryImpl.fetchFiveDayForecast(any(), any()) }
@@ -144,14 +140,14 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastHappyPath() {
+    fun testFetchFiveDayForecastHappyPath() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         val data = testObjectFactory.makeWeatherData5DayListInOrder()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.Success(data)
         coEvery { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) } returns Unit
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify { weatherRepositoryImpl.cacheFiveDayForecastList(data, loc.zipcode) }
         Assert.assertFalse(onNetworkErrorTest)
@@ -159,12 +155,12 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastNetworkError() {
+    fun testFetchFiveDayForecastNetworkError() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.NetworkError
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify(inverse = true) { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) }
         Assert.assertTrue(onNetworkErrorTest)
@@ -172,12 +168,12 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastEmptyList() {
+    fun testFetchFiveDayForecastEmptyList() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.Success(listOf<List<WeatherData>>())
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify(inverse = true) { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) }
         Assert.assertTrue(onNetworkErrorTest)
@@ -185,12 +181,12 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastEmptyListList() {
+    fun testFetchFiveDayForecastEmptyListList() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.Success(listOf(listOf<WeatherData>()))
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify(inverse = true) { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) }
         Assert.assertTrue(onNetworkErrorTest)
@@ -198,12 +194,12 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastListOfOther() {
+    fun testFetchFiveDayForecastListOfOther() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.Success(listOf("hi"))
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify(inverse = true) { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) }
         Assert.assertTrue(onNetworkErrorTest)
@@ -211,12 +207,12 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testFetchFiveDayForecastListListOfOther() {
+    fun testFetchFiveDayForecastListListOfOther() = runTest(testDispatcher) {
         val loc = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getFiveDayForecast(loc.lat, loc.lon) } returns
                 NetworkResult.Success(listOf(listOf("hi")))
 
-        runBlocking { weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks) }
+        weatherRepositoryImpl.fetchFiveDayForecast(loc, callbacks)
 
         coVerify(inverse = true) { weatherRepositoryImpl.cacheFiveDayForecastList(any(), any()) }
         Assert.assertTrue(onNetworkErrorTest)
@@ -224,10 +220,10 @@ internal class WeatherRepositoryImplTest {
     }
 
     @Test
-    fun testDeleteAllWeatherData() {
+    fun testDeleteAllWeatherData() = runTest(testDispatcher) {
         every { mockWeatherDataDao.deleteAll() } returns Unit
 
-        runBlocking { weatherRepositoryImpl.deleteAllWeatherData() }
+        weatherRepositoryImpl.deleteAllWeatherData()
 
         verify { mockWeatherDataDao.deleteAll() }
     }
