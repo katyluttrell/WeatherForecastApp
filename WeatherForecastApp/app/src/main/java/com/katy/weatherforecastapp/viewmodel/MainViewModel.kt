@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.katy.weatherforecastapp.database.cleaning.DatabaseCleaningRoutines
+import com.katy.weatherforecastapp.di.IoDispatcher
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.repository.LocationDataErrorCallbacks
@@ -12,49 +13,63 @@ import com.katy.weatherforecastapp.repository.WeatherDataErrorCallbacks
 import com.katy.weatherforecastapp.repository.WeatherRepository
 import com.katy.weatherforecastapp.ui.dialog.MainViewDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.VisibleForTesting
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val locationRepository: LocationRepository,
     private val weatherRepository: WeatherRepository,
-    private val databaseCleaningRoutines: DatabaseCleaningRoutines
+    private val databaseCleaningRoutines: DatabaseCleaningRoutines,
+    @IoDispatcher
+    private val ioDispatcher: CoroutineDispatcher
 ) : ViewModel() {
+    private val locationCallbacks = object : LocationDataErrorCallbacks {
+        override fun onInvalidZipcode() {
+            zipcodeValidationError.postValue(true)
+        }
 
-    val currentDialog: MutableLiveData<MainViewDialog?> by lazy {
+        override fun onNetworkError() {
+            currentDialog.postValue(MainViewDialog.NetworkFetchError)
+        }
+
+        override fun onNoInternetNoData() {
+            currentDialog.postValue(MainViewDialog.NoInternetNoData)
+        }
+
+    }
+    val weatherCallbacks = object : WeatherDataErrorCallbacks {
+        override fun onNetworkError() {
+            currentDialog.postValue(MainViewDialog.NetworkFetchError)
+        }
+
+        override fun onNoInternetNoData() {
+            currentDialog.postValue(MainViewDialog.NoInternetNoData)
+        }
+
+    }
+
+    internal val currentDialog: MutableLiveData<MainViewDialog?> by lazy {
         MutableLiveData<MainViewDialog?>()
     }
 
-    val location: MutableLiveData<Location> by lazy {
+    internal val  location: MutableLiveData<Location> by lazy {
         MutableLiveData<Location>()
     }
 
-    val zipcodeValidationError: MutableLiveData<Boolean> by lazy {
+    internal val zipcodeValidationError: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
     }
 
-    val weatherDataList: MutableLiveData<List<List<WeatherData>>> by lazy {
+    internal val weatherDataList: MutableLiveData<List<List<WeatherData>>> by lazy {
         MutableLiveData<List<List<WeatherData>>>()
     }
     
-    fun startObservingLocationData(zipcode: String) {
-        val callbacks = object : LocationDataErrorCallbacks {
-            override fun onInvalidZipcode() {
-                zipcodeValidationError.postValue(true)
-            }
-
-            override fun onNetworkError() {
-                currentDialog.postValue(MainViewDialog.NetworkFetchError)
-            }
-
-            override fun onNoInternetNoData() {
-                currentDialog.postValue(MainViewDialog.NoInternetNoData)
-            }
-
-        }
-        viewModelScope.launch {
-            locationRepository.getLocationFlow(zipcode, callbacks)
+    internal fun  startObservingLocationData(zipcode: String) {
+        viewModelScope.launch(ioDispatcher) {
+            locationRepository.getLocationFlow(zipcode, locationCallbacks)
                 .collect {
                     location.postValue(it)
                     startObservingWeatherData(it)
@@ -62,29 +77,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun startObservingWeatherData(loc: Location) {
-        val callbacks = object : WeatherDataErrorCallbacks {
-            override fun onNetworkError() {
-                currentDialog.postValue(MainViewDialog.NetworkFetchError)
-            }
 
-            override fun onNoInternetNoData() {
-                currentDialog.postValue(MainViewDialog.NoInternetNoData)
-            }
-
-        }
-
-        viewModelScope.launch {
-            weatherRepository.getFiveDayForecastListFlow(loc, callbacks)
+    internal fun startObservingWeatherData(loc: Location) {
+        viewModelScope.launch(ioDispatcher) {
+            weatherRepository.getFiveDayForecastListFlow(loc, weatherCallbacks)
                 .collect {
                     weatherDataList.postValue(it)
                 }
         }
     }
 
-    fun cleanDatabase(){
+    internal fun cleanDatabase(){
         if(!databaseCleaningRoutines.hasCleaned) {
-            viewModelScope.launch {
+            viewModelScope.launch(ioDispatcher) {
                 databaseCleaningRoutines.cleanDatabase()
             }
         }
