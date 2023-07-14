@@ -3,6 +3,7 @@ package com.katy.weatherforecastapp.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.katy.weatherforecastapp.database.cleaning.DatabaseCleaningRoutines
 import com.katy.weatherforecastapp.model.Location
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.repository.LocationDataErrorCallbacks
@@ -17,7 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val locationRepository: LocationRepository,
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val databaseCleaningRoutines: DatabaseCleaningRoutines
 ) : ViewModel() {
 
     val currentDialog: MutableLiveData<MainViewDialog?> by lazy {
@@ -77,6 +79,14 @@ class MainViewModel @Inject constructor(
                 .collect {
                     weatherDataList.postValue(it)
                 }
+        }
+    }
+
+    fun cleanDatabase(){
+        if(!databaseCleaningRoutines.hasCleaned) {
+            viewModelScope.launch {
+                databaseCleaningRoutines.cleanDatabase()
+            }
         }
     }
 
