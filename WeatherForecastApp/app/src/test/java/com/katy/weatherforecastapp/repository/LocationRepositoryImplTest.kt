@@ -13,7 +13,8 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
@@ -58,7 +59,7 @@ internal class LocationRepositoryImplTest {
         mockOpenWeatherApi = mockk<OpenWeatherApi>()
         mockNetworkUtils = mockk<NetworkUtils>()
         mockContext = mockk<Context>()
-        testDispatcher = UnconfinedTestDispatcher()
+        testDispatcher = StandardTestDispatcher()
 
         locationRepositoryImpl = spyk(
             LocationRepositoryImpl(
@@ -77,17 +78,17 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testCacheLocation() {
+    fun testCacheLocation() = runTest(testDispatcher) {
         val input = testObjectFactory.makeLocationObject()
         val outputData = testObjectFactory.makeLocationEntityObject()
 
-        runBlocking { locationRepositoryImpl.cacheLocation(input) }
+        locationRepositoryImpl.cacheLocation(input)
 
         verify { mockLocationDao.addLocation(outputData) }
     }
 
     @Test
-    fun testGetLocationFlowHappyPath() {
+    fun testGetLocationFlowHappyPath() = runTest(testDispatcher) {
         val expectedResult = testObjectFactory.makeLocationObject()
         every { mockLocationDao.getLocation("80303") } returns
                 flow {
@@ -95,9 +96,8 @@ internal class LocationRepositoryImplTest {
                 }
         var returnedResult: Location?
 
-        runBlocking {
-            returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).first()
-        }
+
+        returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).first()
 
         assertEquals(expectedResult, returnedResult)
         assertFalse(onInvalidZipcodeTest)
@@ -126,7 +126,7 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testGetLocationFlowNullResultNoInternet() {
+    fun testGetLocationFlowNullResultNoInternet() = runTest(testDispatcher) {
         every { mockNetworkUtils.hasInternetAccess(any()) } returns false
         coEvery { locationRepositoryImpl.fetchLocation(any(), any()) } returns Unit
         val expectedResult = 0
@@ -134,9 +134,9 @@ internal class LocationRepositoryImplTest {
                 flow { emit(null) }
         var returnedResult: Int
 
-        runBlocking {
-            returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
-        }
+
+        returnedResult = locationRepositoryImpl.getLocationFlow("80303", callbacks).count()
+
 
         assertEquals(expectedResult, returnedResult)
         coVerify(inverse = true) { locationRepositoryImpl.fetchLocation("80303", callbacks) }
@@ -146,13 +146,13 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testFetchLocationHappyPath() {
+    fun testFetchLocationHappyPath() = runTest(testDispatcher) {
         val data = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getLocation("80303") } returns
                 NetworkResult.Success(data)
         coEvery { locationRepositoryImpl.cacheLocation(any()) } returns Unit
 
-        runBlocking { locationRepositoryImpl.fetchLocation("80303", callbacks) }
+        locationRepositoryImpl.fetchLocation("80303", callbacks)
 
         coVerify { locationRepositoryImpl.cacheLocation(data) }
         coVerify { locationRepositoryImpl.cacheLocation(data) }
@@ -162,12 +162,12 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testFetchLocationBadRequest() {
+    fun testFetchLocationBadRequest() = runTest(testDispatcher) {
         coEvery { mockOpenWeatherApi.getLocation("80303") } returns
                 NetworkResult.BadRequest
         coEvery { locationRepositoryImpl.cacheLocation(any()) } returns Unit
 
-        runBlocking { locationRepositoryImpl.fetchLocation("80303", callbacks) }
+        locationRepositoryImpl.fetchLocation("80303", callbacks)
 
         coVerify(inverse = true) { locationRepositoryImpl.cacheLocation(any()) }
         assertTrue(onInvalidZipcodeTest)
@@ -176,13 +176,13 @@ internal class LocationRepositoryImplTest {
     }
 
     @Test
-    fun testFetchLocationNetworkError() {
+    fun testFetchLocationNetworkError() = runTest(testDispatcher) {
         val data = testObjectFactory.makeLocationObject()
         coEvery { mockOpenWeatherApi.getLocation("80303") } returns
                 NetworkResult.NetworkError
         coEvery { locationRepositoryImpl.cacheLocation(any()) } returns Unit
 
-        runBlocking { locationRepositoryImpl.fetchLocation("80303", callbacks) }
+        locationRepositoryImpl.fetchLocation("80303", callbacks)
 
         coVerify(inverse = true) { locationRepositoryImpl.cacheLocation(data) }
         assertFalse(onInvalidZipcodeTest)
