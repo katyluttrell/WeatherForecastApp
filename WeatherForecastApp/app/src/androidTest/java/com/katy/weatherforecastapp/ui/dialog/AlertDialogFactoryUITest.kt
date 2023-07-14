@@ -13,6 +13,7 @@ import com.katy.weatherforecastapp.MainActivity
 import com.katy.weatherforecastapp.R
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -47,6 +48,10 @@ class AlertDialogFactoryUITest {
             it.supportFragmentManager.popBackStackImmediate()
         }
         InstrumentationRegistry.getInstrumentation().targetContext.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+    }
+    @After
+    fun teardown(){
+        activity.close()
     }
     
     @Test

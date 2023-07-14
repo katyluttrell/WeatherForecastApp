@@ -89,4 +89,23 @@ class WeatherDatabaseTestWeatherDataTable {
         }
         assertEquals(emptyList<WeatherData>(), retrievedData)
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun testDeleteOldData() {
+        for(i in 1..31){
+            weatherDataDao.addWeatherData(testObjectFactory.makeWeatherDataEntity(dateVersion = i))
+        }
+        val expectedEndData = mutableListOf<WeatherData>()
+        for(i in 17..31){
+            expectedEndData.add(testObjectFactory.makeWeatherData(i))
+        }
+        val keepDays = setOf<String>("2023-07-12", "2023-07-13")
+        runBlocking { weatherDataDao.deleteOldData(keepDays) }
+        var retrievedData: List<WeatherData>
+        runBlocking {
+            retrievedData = weatherDataDao.getWeatherData().first().map { it.asExternalModel() }
+        }
+        assertEquals(expectedEndData, retrievedData)
+    }
 }

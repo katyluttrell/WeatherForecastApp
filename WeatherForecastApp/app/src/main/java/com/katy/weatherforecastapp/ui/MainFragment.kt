@@ -55,6 +55,7 @@ class MainFragment : Fragment() {
         }
         viewModel.weatherDataList.observe(viewLifecycleOwner) {
             setUpForecastRecycler(it)
+            viewModel.cleanDatabase()
         }
         viewModel.currentDialog.observe(viewLifecycleOwner) { dialogType ->
             dialogType?.let {

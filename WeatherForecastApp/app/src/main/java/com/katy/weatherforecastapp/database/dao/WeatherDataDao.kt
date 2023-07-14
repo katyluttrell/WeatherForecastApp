@@ -18,4 +18,8 @@ interface WeatherDataDao {
     @Transaction
     @Query("DELETE FROM weatherData")
     fun deleteAll()
+
+    @Query("DELETE FROM weatherData WHERE SUBSTR(dtTxt, 1, 10) NOT IN (:keepDays)")
+    @Transaction
+    fun deleteOldData(keepDays:Set<String>)
 }
