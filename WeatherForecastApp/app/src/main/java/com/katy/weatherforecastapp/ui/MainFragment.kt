@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,7 +29,8 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var alertDialogFactory: AlertDialogFactory
 
-    private val viewModel: MainViewModel by activityViewModels()
+    @VisibleForTesting(otherwise=VisibleForTesting.PRIVATE)
+    internal val viewModel: MainViewModel by activityViewModels()
     private lateinit var binding: FragmentMainBinding
 
     override fun onCreateView(

@@ -24,7 +24,7 @@
     <string name="network_fetch_error">Network Error</string>
     <string name="please_try_again_later">Please try again later.</string>
     <string name="yesterday">Yesterday</string>
-    <string name="enter_you_zip_code">Enter you zip code</string>
+    <string name="enter_you_zip_code">Enter your zip code</string>
     <string name="zip_code">Zip Code</string>
     <string name="fragment_main_label">fragment_main</string>
     <string name="fragment_single_day_forecast_label">fragment_single_day_forecast</string>
