@@ -5,6 +5,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.katy.weatherforecastapp.adapter.DateAdapter
 import com.katy.weatherforecastapp.database.migrations.migration_1_2
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -12,6 +13,8 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class MigrationTestsWeatherDataTable {
+
+    val testObjectFactory = TestObjectFactory()
 
     private val dbName = "weather"
 
@@ -24,7 +27,7 @@ class MigrationTestsWeatherDataTable {
     @Test
     fun testMigration1to2Data() {
         val db = testHelper.createDatabase(dbName, 1)
-        val date = DateAdapter().localDateTimeToString(WeatherDataFactory().makeDate())
+        val date = DateAdapter().localDateTimeToString(testObjectFactory.makeDateTime())
         db.apply {
             execSQL("INSERT INTO weatherData VALUES('$date', 72.5, 60.1, 100.4, '0.2', 'rain', 'super heavy rain', '11d', 5.3, 15.0)")
             close()

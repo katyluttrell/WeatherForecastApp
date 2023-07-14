@@ -7,7 +7,7 @@ import com.katy.weatherforecastapp.model.local.WeatherDataEntity
 import com.katy.weatherforecastapp.network.NetworkResult
 import com.katy.weatherforecastapp.network.NetworkUtils
 import com.katy.weatherforecastapp.network.OpenWeatherApi
-import com.katy.weatherforecastapp.testObjects.TestObjectFactory
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import io.mockk.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.count

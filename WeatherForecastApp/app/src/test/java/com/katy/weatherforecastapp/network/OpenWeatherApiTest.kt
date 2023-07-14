@@ -2,7 +2,7 @@ package com.katy.weatherforecastapp.network
 
 import com.katy.weatherforecastapp.model.remote.NetworkFiveDayForecast
 import com.katy.weatherforecastapp.model.remote.NetworkLocation
-import com.katy.weatherforecastapp.testObjects.TestObjectFactory
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll

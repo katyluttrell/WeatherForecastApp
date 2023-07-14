@@ -1,4 +1,4 @@
-package com.katy.weatherforecastapp.testObjects
+package com.katy.weatherforecastapp.util.testUtil.testObjects
 
 import com.katy.weatherforecastapp.model.*
 import com.katy.weatherforecastapp.model.local.*

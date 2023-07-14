@@ -8,6 +8,7 @@ import com.katy.weatherforecastapp.database.dao.WeatherDataDao
 import com.katy.weatherforecastapp.model.WeatherData
 import com.katy.weatherforecastapp.model.asEntity
 import com.katy.weatherforecastapp.model.local.asExternalModel
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -21,6 +22,7 @@ import java.io.IOException
 class WeatherDatabaseTestWeatherDataTable {
     private lateinit var weatherDataDao: WeatherDataDao
     private lateinit var database: WeatherDatabase
+    private val testObjectFactory = TestObjectFactory()
 
 
     @Before
@@ -41,7 +43,7 @@ class WeatherDatabaseTestWeatherDataTable {
     @Test
     @Throws(Exception::class)
     fun testReadWriteData() {
-        val weatherData = WeatherDataFactory().makeWeatherData()
+        val weatherData = testObjectFactory.makeWeatherData()
         weatherDataDao.addWeatherData(weatherData.asEntity("80303"))
         var retrievedData: List<WeatherData>
         runBlocking {
@@ -64,9 +66,8 @@ class WeatherDatabaseTestWeatherDataTable {
     @Test
     @Throws(Exception::class)
     fun testConflictStrategyReplace() {
-        val weatherDataFactory = WeatherDataFactory()
-        val data = weatherDataFactory.makeWeatherData(1, 1, 1, 1)
-        val conflictData = weatherDataFactory.makeWeatherData(1, 2, 2, 2)
+        val data = testObjectFactory.makeWeatherData(1, 1, 1, 1)
+        val conflictData = testObjectFactory.makeWeatherData(1, 2, 2, 2)
         weatherDataDao.addWeatherData(data.asEntity("80303"))
         weatherDataDao.addWeatherData(conflictData.asEntity("80303"))
         var retrievedData: List<WeatherData>
@@ -80,7 +81,7 @@ class WeatherDatabaseTestWeatherDataTable {
     @Test
     @Throws(Exception::class)
     fun testDelete() {
-        weatherDataDao.addWeatherData(WeatherDataFactory().makeWeatherData().asEntity("80303"))
+        weatherDataDao.addWeatherData(testObjectFactory.makeWeatherData().asEntity("80303"))
         runBlocking { weatherDataDao.deleteAll() }
         var retrievedData: List<WeatherData>
         runBlocking {

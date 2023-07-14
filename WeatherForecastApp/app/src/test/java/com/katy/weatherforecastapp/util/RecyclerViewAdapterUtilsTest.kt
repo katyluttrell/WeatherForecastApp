@@ -2,7 +2,7 @@ package com.katy.weatherforecastapp.util
 
 import com.katy.weatherforecastapp.R
 import com.katy.weatherforecastapp.model.WeatherData
-import com.katy.weatherforecastapp.testObjects.TestObjectFactory
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -1,6 +1,6 @@
 package com.katy.weatherforecastapp.model
 
-import com.katy.weatherforecastapp.testObjects.TestObjectFactory
+import com.katy.weatherforecastapp.util.testUtil.testObjects.TestObjectFactory
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
