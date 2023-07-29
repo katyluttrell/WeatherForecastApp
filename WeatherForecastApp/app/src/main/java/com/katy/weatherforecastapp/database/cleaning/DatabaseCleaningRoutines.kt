@@ -21,8 +21,8 @@ class DatabaseCleaningRoutines @Inject constructor(
 
     suspend fun cleanDatabase(){
         hasCleanedState = true
+        val keepDays = getTodayAndNextFiveDays()
         withContext(ioDispatcher){
-            val keepDays = getTodayAndNextFiveDays()
             weatherDataDao.deleteOldData(keepDays)
         }
     }

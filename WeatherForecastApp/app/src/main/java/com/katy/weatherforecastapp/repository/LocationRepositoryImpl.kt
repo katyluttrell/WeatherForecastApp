@@ -53,17 +53,15 @@ class LocationRepositoryImpl @Inject constructor(
         zipcode: String,
         errorCallbacks: LocationDataErrorCallbacks
     ) {
-        withContext(ioDispatcher) {
-            when (val result = openWeatherApi.getLocation(zipcode)) {
-                is NetworkResult.Success -> {
-                    cacheLocation(result.response as Location)
-                }
-                is NetworkResult.BadRequest -> {
-                    errorCallbacks.onInvalidZipcode()
-                }
-                is NetworkResult.NetworkError -> {
-                    errorCallbacks.onNetworkError()
-                }
+        when (val result = withContext(ioDispatcher){ openWeatherApi.getLocation(zipcode) }) {
+            is NetworkResult.Success -> {
+                cacheLocation(result.response as Location)
+            }
+            is NetworkResult.BadRequest -> {
+                errorCallbacks.onInvalidZipcode()
+            }
+            is NetworkResult.NetworkError -> {
+                errorCallbacks.onNetworkError()
             }
         }
     }
