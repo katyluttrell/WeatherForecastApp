@@ -1,14 +1,12 @@
 package com.katy.weatherforecastapp.ui.dialog
 
 import android.app.AlertDialog
-import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import com.katy.weatherforecastapp.MainActivity
 import com.katy.weatherforecastapp.R
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -47,7 +45,6 @@ class AlertDialogFactoryUITest {
             builder = AlertDialog.Builder(it)
             it.supportFragmentManager.popBackStackImmediate()
         }
-        InstrumentationRegistry.getInstrumentation().targetContext.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
     }
     @After
     fun teardown(){
@@ -62,6 +59,7 @@ class AlertDialogFactoryUITest {
             dialog = alertDialogFactory.createDialog(builder, dialogType, callback)
             dialog?.show()
         }
+        Thread.sleep(1000)
         assert(dialog?.isShowing == true)
         onView(withText(R.string.no_internet_no_data))
             .check(matches(isDisplayed()))
@@ -82,6 +80,7 @@ class AlertDialogFactoryUITest {
             dialog = alertDialogFactory.createDialog(builder, dialogType, callback)
             dialog?.show()
         }
+        Thread.sleep(1000)
         assert(dialog?.isShowing == true)
         onView(withText(R.string.network_fetch_error))
             .check(matches(isDisplayed()))
