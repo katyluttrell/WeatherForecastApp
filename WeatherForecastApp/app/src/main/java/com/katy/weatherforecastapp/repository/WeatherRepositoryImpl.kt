@@ -64,7 +64,6 @@ class WeatherRepositoryImpl @Inject constructor(
         location: Location,
         callbacks: WeatherDataErrorCallbacks
     ) {
-        withContext(Dispatchers.IO) {
             val receivedWeather = openWeatherApi.getFiveDayForecast(location.lat, location.lon)
             if (receivedWeather is NetworkResult.Success) {
                 val response = receivedWeather.response
@@ -88,7 +87,6 @@ class WeatherRepositoryImpl @Inject constructor(
             } else {
                 callbacks.onNetworkError()
             }
-        }
     }
 
     override suspend fun deleteAllWeatherData() {
